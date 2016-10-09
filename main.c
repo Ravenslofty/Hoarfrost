@@ -27,6 +27,7 @@
 #include <time.h>
 
 #include "board.h"
+#include "functions.h"
 #include "m42.h"
 
 int main()

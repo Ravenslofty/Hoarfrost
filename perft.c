@@ -25,6 +25,7 @@
 #include <inttypes.h>
 
 #include "board.h"
+#include "functions.h"
 
 uint64_t Perft(struct Board * b, int depth)
 {

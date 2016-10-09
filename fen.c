@@ -28,6 +28,7 @@
 #include <stdio.h>
 
 #include "board.h"
+#include "functions.h"
 
 void ClearBoard(struct Board * b)
 {

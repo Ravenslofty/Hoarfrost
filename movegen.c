@@ -26,6 +26,7 @@
 #include <stdio.h>
 
 #include "board.h"
+#include "functions.h"
 #include "m42.h"
 
 static inline void AddMove(struct Move * m, int * movecount, int from, int dest, int type, int prompiece, int color, int piece)

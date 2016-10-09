@@ -25,6 +25,7 @@
 #include <inttypes.h>
 
 #include "board.h"
+#include "functions.h"
 
 void MakeMove(struct Board * b, struct Undo * u, struct Move m)
 {

@@ -22,34 +22,31 @@
  * SOFTWARE.
  */
 
+#ifndef FUNCTIONS_H
+#define FUNCTIONS_H
+
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "board.h"
-#include "m42.h"
 
-bool IsAttacked(struct Board * b, int side, int square)
-{
-    uint64_t pawns, knights, bishopsqueens, rooksqueens, kings;
+// attacked.c
+extern bool IsAttacked(struct Board * b, int side, int square);
+extern bool IsLegal(struct Board * b);
 
-    pawns = b->pieces[PAWN] & b->colors[side];
-    if (pawn_attacks(!side, square) & pawns) return true;
+// fen.c
+extern void ClearBoard(struct Board * b);
+extern void ParseFEN(struct Board * b, char * fen);
 
-    knights = b->pieces[KNIGHT] & b->colors[side];
-    if (knight_attacks(square) & knights) return true;
+// makemove.c
+extern void MakeMove(struct Board * b, struct Undo * u, struct Move m);
+extern void UnmakeMove(struct Board * b, struct Undo * u, struct Move m);
 
-    kings = b->pieces[KING] & b->colors[side];
-    if (king_attacks(square) & kings) return true;
+// movegen.c
+extern int GenerateQuiets(struct Board * b, struct Move * m);
+extern int GenerateCaptures(struct Board * b, struct Move * m);
 
-    bishopsqueens = (b->pieces[BISHOP] | b->pieces[QUEEN]) & b->colors[side];
-    if (bishop_attacks(square, (b->colors[WHITE] | b->colors[BLACK])) & bishopsqueens) return true;
+// perft.c
+extern uint64_t Perft(struct Board * b, int depth);
 
-    rooksqueens = (b->pieces[ROOK] | b->pieces[QUEEN]) & b->colors[side];
-    if (rook_attacks(square, (b->colors[WHITE] | b->colors[BLACK])) & rooksqueens) return true;
-
-    return false;
-}
-
-bool IsLegal(struct Board * b)
-{
-    return IsAttacked(b, !b->side, lsb(b->pieces[KING] & b->colors[b->side]));
-}
+#endif
