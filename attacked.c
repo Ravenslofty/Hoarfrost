@@ -25,6 +25,7 @@
 #include <stdbool.h>
 
 #include "board.h"
+#include "functions.h"
 #include "m42.h"
 
 bool IsAttacked(struct Board * b, int side, int square)
