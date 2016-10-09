@@ -47,7 +47,8 @@ uint64_t Perft(struct Board * b, int depth)
 
         MakeMove(b, &u, m[i]);
 
-        if (!IsLegal(b)) {
+        if (IsIllegal(b)) {
+            UnmakeMove(b, &u, m[i]);
             continue;
         }
 
@@ -74,7 +75,8 @@ uint64_t Perft(struct Board * b, int depth)
 
         MakeMove(b, &u, m[i]);
 
-        if (!IsLegal(b)) {
+        if (IsIllegal(b)) {
+            UnmakeMove(b, &u, m[i]);
             continue;
         }
 
@@ -115,7 +117,8 @@ uint64_t Divide(struct Board * b, int depth)
 
         MakeMove(b, &u, m[i]);
 
-        if (!IsLegal(b)) {
+        if (IsIllegal(b)) {
+            UnmakeMove(b, &u, m[i]);
             continue;
         }
 
@@ -146,7 +149,8 @@ uint64_t Divide(struct Board * b, int depth)
 
         MakeMove(b, &u, m[i]);
 
-        if (!IsLegal(b)) {
+        if (IsIllegal(b)) {
+            UnmakeMove(b, &u, m[i]);
             continue;
         }
 
