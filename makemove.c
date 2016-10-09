@@ -30,13 +30,20 @@ void MakeMove(struct Board * b, struct Undo * u, struct Move m)
 {
     uint64_t frombb, destbb;
 
-    frombb = 1ULL << (m.from & 63);
-    destbb = 1ULL << (m.dest & 63);
+    char from = m.from & 63;
+    char dest = m.dest & 63;
+    char type = m.type & 7;
+    char prom = m.prom & 7;
+    char color = m.color & 1;
+    char piece = m.piece & 7;
+
+    frombb = 1ULL << from;
+    destbb = 1ULL << dest;
 
     u->ep = b->ep;
     b->ep = INVALID;
 
-    switch (m.type) {
+    switch (type) {
     case QUIET:
         break;
 
@@ -65,12 +72,12 @@ void MakeMove(struct Board * b, struct Undo * u, struct Move m)
             u->cap = KING;
 
         b->pieces[u->cap] ^= destbb;
-        b->pieces[!(m.color&1)] ^= destbb;
+        b->pieces[!color] ^= destbb;
         break;
     }
 
-    b->pieces[m.piece&7] ^= frombb | destbb;
-    b->colors[m.color&1] ^= frombb | destbb;
+    b->pieces[piece] ^= frombb | destbb;
+    b->colors[color] ^= frombb | destbb;
 
     b->side ^= 1;
 }
@@ -79,12 +86,19 @@ void UnmakeMove(struct Board * b, struct Undo * u, struct Move m)
 {
     uint64_t frombb, destbb;
 
-    frombb = 1ULL << (m.from & 63);
-    destbb = 1ULL << (m.dest & 63);
+    char from = m.from & 63;
+    char dest = m.dest & 63;
+    char type = m.type & 7;
+    char prom = m.prom & 7;
+    char color = m.color & 1;
+    char piece = m.piece & 7;
+
+    frombb = 1ULL << from;
+    destbb = 1ULL << dest;
 
     b->side ^= 1;
 
-    switch (m.type) {
+    switch (type) {
     case QUIET:
         break;
 
@@ -93,12 +107,12 @@ void UnmakeMove(struct Board * b, struct Undo * u, struct Move m)
 
     case CAPTURE:
         b->pieces[u->cap] ^= destbb;
-        b->pieces[!(m.color&1)] ^= destbb;
+        b->pieces[!color] ^= destbb;
         break;
     }
 
     b->ep = u->ep;
 
-    b->pieces[m.piece&7] ^= frombb | destbb;
-    b->colors[m.color&1] ^= frombb | destbb;
+    b->pieces[piece] ^= frombb | destbb;
+    b->colors[color] ^= frombb | destbb;
 }
