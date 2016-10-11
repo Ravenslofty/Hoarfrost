@@ -73,12 +73,12 @@ void MakeMove(struct Board * b, struct Undo * u, struct Move m)
             u->cap = KING;
 
         b->pieces[u->cap] ^= destbb;
-        b->pieces[!color] ^= destbb;
+        b->colors[!b->side] ^= destbb;
         break;
     }
 
     b->pieces[piece] ^= frombb | destbb;
-    b->colors[color] ^= frombb | destbb;
+    b->colors[b->side] ^= frombb | destbb;
 
     b->side ^= 1;
 }
@@ -108,12 +108,12 @@ void UnmakeMove(struct Board * b, struct Undo * u, struct Move m)
 
     case CAPTURE:
         b->pieces[u->cap] ^= destbb;
-        b->pieces[!color] ^= destbb;
+        b->colors[!b->side] ^= destbb;
         break;
     }
 
     b->ep = u->ep;
 
     b->pieces[piece] ^= frombb | destbb;
-    b->colors[color] ^= frombb | destbb;
+    b->colors[b->side] ^= frombb | destbb;
 }
