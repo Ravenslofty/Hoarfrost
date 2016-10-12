@@ -30,19 +30,19 @@
 struct Board {
     uint64_t pieces[6];
     uint64_t colors[2];
-    char side;
-    char castle;
-    char ep;
-    char fifty;
+    unsigned char side;
+    unsigned char castle;
+    unsigned char ep;
+    unsigned char fifty;
 };
 
 struct Move {
-    char from:6;
-    char dest:6;
-    char type:3;
-    char prom:3;
-    char color:1;
-    char piece:3;
+    unsigned char from:6;
+    unsigned char dest:6;
+    unsigned char type:3;
+    unsigned char prom:3;
+    unsigned char color:1;
+    unsigned char piece:3;
 };
 
 struct Undo {

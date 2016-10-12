@@ -225,12 +225,12 @@ void ParseFEN(struct Board * b, char * fen)
     c = fen[fenidx];
     fenidx++;
 
-    b->ep = c - '0';
+    b->fifty = c - '0';
 
     if (fen[fenidx] != ' ') {
-        b->ep *= 10;
+        b->fifty *= 10;
         c = fen[fenidx];
-        b->ep += c - '0';
+        b->fifty += c - '0';
     }
 
     // Next would be the fullmove counter, except we really don't care about it in the

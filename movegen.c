@@ -303,6 +303,19 @@ int GenerateCaptures(struct Board * b, struct Move * m)
 
             attacks &= attacks - 1;
         }
+
+        // En passant
+        if (b->ep != INVALID) {
+            attacks = pawn_attacks(BLACK, b->ep) & b->pieces[PAWN] & b->colors[WHITE];
+
+            while (attacks) {
+                from = lsb(attacks);
+
+                AddMove(m, &movecount, from, b->ep, ENPASSANT, INVALID, WHITE, PAWN);
+
+                attacks &= attacks - 1;
+            }
+        }
     } else {
         pawns = b->pieces[PAWN] & b->colors[BLACK];
 
@@ -354,6 +367,19 @@ int GenerateCaptures(struct Board * b, struct Move * m)
             AddMove(m, &movecount, dest + 7, dest, CAPTURE_PROMOTION, KNIGHT, BLACK, PAWN);
 
             attacks &= attacks - 1;
+        }
+
+        // En passant
+        if (b->ep != INVALID) {
+            attacks = pawn_attacks(WHITE, b->ep) & b->pieces[PAWN] & b->colors[BLACK];
+
+            while (attacks) {
+                from = lsb(attacks);
+
+                AddMove(m, &movecount, from, b->ep, ENPASSANT, INVALID, BLACK, PAWN);
+
+                attacks &= attacks - 1;
+            }
         }
     }
 

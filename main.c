@@ -112,12 +112,17 @@ int main()
             printf("colors[BLACK]:  %016llX\n", b.colors[BLACK]);
             printf("\n");
             printf("side to move:   %d\n", b.side);
+            printf("en passant sq:  %d\n", b.ep);
             continue;
         }
 
         if (!strncmp(str, "undo", 4)) {
             UnmakeMove(&b, &u, m[i]);
             continue;
+        }
+
+        if (!strncmp(str, "quit", 4)) {
+            break;
         }
     }
 

@@ -30,6 +30,7 @@
 void MakeMove(struct Board * b, struct Undo * u, struct Move m)
 {
     uint64_t frombb, destbb;
+    char epdest;
 
     char from = m.from & 63;
     char dest = m.dest & 63;
@@ -75,6 +76,17 @@ void MakeMove(struct Board * b, struct Undo * u, struct Move m)
         b->pieces[u->cap] ^= destbb;
         b->colors[!b->side] ^= destbb;
         break;
+
+    case ENPASSANT:
+        if (b->side == WHITE) {
+            epdest = dest - 8;
+        } else {
+            epdest = dest + 8;
+        }
+
+        b->pieces[PAWN] ^= 1ULL << epdest;
+        b->colors[!b->side] ^= 1ULL << epdest;
+        break;
     }
 
     b->pieces[piece] ^= frombb | destbb;
@@ -86,6 +98,7 @@ void MakeMove(struct Board * b, struct Undo * u, struct Move m)
 void UnmakeMove(struct Board * b, struct Undo * u, struct Move m)
 {
     uint64_t frombb, destbb;
+    char epdest;
 
     char from = m.from & 63;
     char dest = m.dest & 63;
@@ -109,6 +122,17 @@ void UnmakeMove(struct Board * b, struct Undo * u, struct Move m)
     case CAPTURE:
         b->pieces[u->cap] ^= destbb;
         b->colors[!b->side] ^= destbb;
+        break;
+
+    case ENPASSANT:
+        if (b->side == WHITE) {
+            epdest = dest - 8;
+        } else {
+            epdest = dest + 8;
+        }
+
+        b->pieces[PAWN] ^= 1ULL << epdest;
+        b->colors[!b->side] ^= 1ULL << epdest;
         break;
     }
 
