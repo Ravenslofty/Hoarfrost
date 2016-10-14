@@ -237,7 +237,7 @@ int GenerateQuiets(struct Board * b, struct Move * m)
     // Castling - can't castle out of check
     if (!IsInCheck(b)) {
 
-        from = lsb(b->pieces[b->side] & b->colors[b->side]);
+        from = lsb(b->pieces[KING] & b->colors[b->side]);
 
         if (b->castle & (1 << (2*(b->side == BLACK)))) {
             /* Can't castle through check */
