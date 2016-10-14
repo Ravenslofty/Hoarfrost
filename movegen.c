@@ -39,8 +39,6 @@ static inline void AddMove(struct Move * m, int * movecount, int from, int dest,
     n.color = color;
     n.piece = piece;
 
-    //printf("%d %d %d %d %d %d %d\n", from, dest, type, prompiece, color, piece, *movecount);
-
     m[*movecount] = n;
     *movecount = *movecount + 1;
 }
@@ -234,6 +232,27 @@ int GenerateQuiets(struct Board * b, struct Move * m)
         }
 
         kings &= kings - 1;
+    }
+
+    // Castling - can't castle out of check
+    if (!IsInCheck(b)) {
+
+        from = lsb(b->pieces[b->side] & b->colors[b->side]);
+
+        if (b->castle & (1 << (2*(b->side == BLACK)))) {
+            /* Can't castle through check */
+            if (!IsAttacked(b,!b->side,from+1) && !IsAttacked(b,!b->side,from+2) &&
+                    ((1ULL << (from+1)) & empty) && ((1ULL << (from+2)) & empty)) {
+                AddMove(m, &movecount, from, from + 2, CASTLE, INVALID, b->side, KING);
+            }
+        }
+
+        if (b->castle & (2 << (2*(b->side == BLACK)))) {
+            if (!IsAttacked(b,!b->side,from-1) && !IsAttacked(b,!b->side,from-2) &&
+                    ((1ULL << (from-1)) & empty) && ((1ULL << (from-2)) & empty) && ((1ULL << (from-3)) & empty)) {
+                AddMove(m, &movecount, from, from - 2, CASTLE, INVALID, b->side, KING);
+            }
+        }
     }
 
     return movecount;

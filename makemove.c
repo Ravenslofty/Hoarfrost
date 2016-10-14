@@ -27,9 +27,20 @@
 #include "board.h"
 #include "functions.h"
 
+static int castle_mask[64] = {
+    13, 15, 15, 15, 12, 15, 15, 14,
+    15, 15, 15, 15, 15, 15, 15, 15,
+    15, 15, 15, 15, 15, 15, 15, 15,
+    15, 15, 15, 15, 15, 15, 15, 15,
+    15, 15, 15, 15, 15, 15, 15, 15,
+    15, 15, 15, 15, 15, 15, 15, 15,
+    15, 15, 15, 15, 15, 15, 15, 15,
+     7, 15, 15, 15,  3, 15, 15, 11
+};
+
 void MakeMove(struct Board * b, struct Undo * u, struct Move m)
 {
-    uint64_t frombb, destbb;
+    uint64_t frombb, destbb, tmpbb;
     char epdest;
 
     char from = m.from & 63;
@@ -44,6 +55,9 @@ void MakeMove(struct Board * b, struct Undo * u, struct Move m)
 
     u->ep = b->ep;
     b->ep = INVALID;
+
+    u->castle = b->castle;
+    b->castle &= castle_mask[from] & castle_mask[dest];
 
     switch (type) {
     case QUIET:
@@ -87,6 +101,19 @@ void MakeMove(struct Board * b, struct Undo * u, struct Move m)
         b->pieces[PAWN] ^= 1ULL << epdest;
         b->colors[!b->side] ^= 1ULL << epdest;
         break;
+
+    case CASTLE:
+        // Kingside
+        if (dest > from) {
+            tmpbb = (1ULL << (dest+1)) | (1ULL << (from+1));
+        // Queenside
+        } else {
+            tmpbb = (1ULL << (dest-2)) | (1ULL << (from-1));
+        }
+
+        b->pieces[ROOK] ^= tmpbb;
+        b->colors[b->side] ^= tmpbb;
+        break;
     }
 
     b->pieces[piece] ^= frombb | destbb;
@@ -97,7 +124,7 @@ void MakeMove(struct Board * b, struct Undo * u, struct Move m)
 
 void UnmakeMove(struct Board * b, struct Undo * u, struct Move m)
 {
-    uint64_t frombb, destbb;
+    uint64_t frombb, destbb, tmpbb;
     char epdest;
 
     char from = m.from & 63;
@@ -134,7 +161,22 @@ void UnmakeMove(struct Board * b, struct Undo * u, struct Move m)
         b->pieces[PAWN] ^= 1ULL << epdest;
         b->colors[!b->side] ^= 1ULL << epdest;
         break;
+
+    case CASTLE:
+        // Kingside
+        if (dest > from) {
+            tmpbb = (1ULL << (dest+1)) | (1ULL << (from+1));
+        // Queenside
+        } else {
+            tmpbb = (1ULL << (dest-2)) | (1ULL << (from-1));
+        }
+
+        b->pieces[ROOK] ^= tmpbb;
+        b->colors[b->side] ^= tmpbb;
+        break;
     }
+
+    b->castle = u->castle;
 
     b->ep = u->ep;
 

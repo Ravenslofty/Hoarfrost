@@ -26,6 +26,7 @@
 #define BOARD_H
 
 #include <inttypes.h>
+#include <stdio.h>
 
 struct Board {
     uint64_t pieces[6];
@@ -48,6 +49,7 @@ struct Move {
 struct Undo {
     char ep;
     char cap;
+    char castle;
 };
 
 #define COL(x) ((x)&7)

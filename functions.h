@@ -33,6 +33,7 @@
 // attacked.c
 extern bool IsAttacked(struct Board * b, int side, int square);
 extern bool IsIllegal(struct Board * b);
+extern bool IsInCheck(struct Board * b);
 
 // fen.c
 extern void ClearBoard(struct Board * b);
