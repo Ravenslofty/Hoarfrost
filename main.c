@@ -33,6 +33,7 @@
 int main()
 {
     m42_init();
+    InitMagics();
 
     struct Board b;
     struct Undo u;
