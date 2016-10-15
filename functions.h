@@ -49,5 +49,6 @@ extern int GenerateCaptures(struct Board * b, struct Move * m);
 
 // perft.c
 extern uint64_t Perft(struct Board * b, int depth);
+extern uint64_t Divide(struct Board * b, int depth);
 
 #endif

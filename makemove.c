@@ -111,11 +111,44 @@ void MakeMove(struct Board * b, struct Undo * u, struct Move m)
             tmpbb = (1ULL << (dest-2)) | (1ULL << (from-1));
         }
 
+        // Move the rook.
         b->pieces[ROOK] ^= tmpbb;
         b->colors[b->side] ^= tmpbb;
         break;
+
+    case PROMOTION:
+        // Change the piece type.
+        b->pieces[PAWN] ^= destbb;
+        b->pieces[prom] ^= destbb;
+        break;
+
+    case CAPTURE_PROMOTION:
+        // This is awkward
+        u->cap = INVALID;
+        if (destbb & b->pieces[PAWN])
+            u->cap = PAWN;
+        else if (destbb & b->pieces[KNIGHT])
+            u->cap = KNIGHT;
+        else if (destbb & b->pieces[BISHOP])
+            u->cap = BISHOP;
+        else if (destbb & b->pieces[ROOK])
+            u->cap = ROOK;
+        else if (destbb & b->pieces[QUEEN])
+            u->cap = QUEEN;
+        else if (destbb & b->pieces[KING])
+            u->cap = KING;
+
+        // Remove the piece.
+        b->pieces[u->cap] ^= destbb;
+        b->colors[!b->side] ^= destbb;
+
+        // Change the piece type.
+        b->pieces[PAWN] ^= destbb;
+        b->pieces[prom] ^= destbb;
+        break;
     }
 
+    // Move the piece.
     b->pieces[piece] ^= frombb | destbb;
     b->colors[b->side] ^= frombb | destbb;
 
@@ -147,17 +180,20 @@ void UnmakeMove(struct Board * b, struct Undo * u, struct Move m)
         break;
 
     case CAPTURE:
+        // Add the captured piece.
         b->pieces[u->cap] ^= destbb;
         b->colors[!b->side] ^= destbb;
         break;
 
     case ENPASSANT:
+        // Get the piece location.
         if (b->side == WHITE) {
             epdest = dest - 8;
         } else {
             epdest = dest + 8;
         }
 
+        // Add the captured piece.
         b->pieces[PAWN] ^= 1ULL << epdest;
         b->colors[!b->side] ^= 1ULL << epdest;
         break;
@@ -171,8 +207,25 @@ void UnmakeMove(struct Board * b, struct Undo * u, struct Move m)
             tmpbb = (1ULL << (dest-2)) | (1ULL << (from-1));
         }
 
+        // Move the rook.
         b->pieces[ROOK] ^= tmpbb;
         b->colors[b->side] ^= tmpbb;
+        break;
+
+    case PROMOTION:
+        // Change the piece type.
+        b->pieces[PAWN] ^= destbb;
+        b->pieces[prom] ^= destbb;
+        break;
+
+    case CAPTURE_PROMOTION:
+        // Remove the piece.
+        b->pieces[u->cap] ^= destbb;
+        b->colors[!b->side] ^= destbb;
+
+        // Change the piece type.
+        b->pieces[PAWN] ^= destbb;
+        b->pieces[prom] ^= destbb;
         break;
     }
 
@@ -180,6 +233,7 @@ void UnmakeMove(struct Board * b, struct Undo * u, struct Move m)
 
     b->ep = u->ep;
 
+    // Move the piece.
     b->pieces[piece] ^= frombb | destbb;
     b->colors[b->side] ^= frombb | destbb;
 }
