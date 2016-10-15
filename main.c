@@ -28,11 +28,9 @@
 
 #include "board.h"
 #include "functions.h"
-#include "m42.h"
 
 int main()
 {
-    m42_init();
     InitMagics();
 
     struct Board b;
