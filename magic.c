@@ -24,16 +24,18 @@
 
 #include <assert.h>
 #include <stdint.h>
-
-#include "m42.h"
+#include "board.h"
 
 // Using the code kindly provided by Volker Annuss:
 // http://www.talkchess.com/forum/viewtopic.php?topic_view=threads&p=670709&t=60065
 
 static uint64_t MagicTable[89524]; // < 700KB, well done Volker!
 
+static uint64_t PawnMask[2][64];
+static uint64_t KnightMask[64];
 static uint64_t BishopMask[64];
 static uint64_t RookMask[64];
+static uint64_t KingMask[64];
 
 static const uint64_t BishopMagic[64] = {
     0x404040404040ULL, 0xa060401007fcULL, 0x401020200000ULL, 0x806004000000ULL,
@@ -111,16 +113,34 @@ static const uint64_t * RookOffset[64] = {
     MagicTable+67204, MagicTable+32448, MagicTable+62946, MagicTable+17005
 };
 
+uint64_t PawnAttacks(const int side, const int sq)
+{
+    return PawnMask[side][sq];
+}
+
+uint64_t KnightAttacks(const int sq)
+{
+    return KnightMask[sq];
+}
+
 uint64_t BishopAttacks(const int sq, const uint64_t occ)
 {
-    uint64_t result = *(BishopOffset[sq] + (((occ & BishopMask[sq]) * BishopMagic[sq]) >> 55));
-    assert(result == calc_bishop_attacks(sq, occ));
-    return result;
+    return *(BishopOffset[sq] + (((occ & BishopMask[sq]) * BishopMagic[sq]) >> 55));
 }
 
 uint64_t RookAttacks(const int sq, const uint64_t occ)
 {
     return *(RookOffset[sq] + (((occ & RookMask[sq]) * RookMagic[sq]) >> 52));
+}
+
+uint64_t QueenAttacks(const int sq, const uint64_t occ)
+{
+    return RookAttacks(sq, occ) | BishopAttacks(sq, occ);
+}
+
+uint64_t KingAttacks(const int sq)
+{
+    return KingMask[sq];
 }
 
 // Steffan Westcott's innovation.
@@ -234,18 +254,50 @@ static uint64_t CalcBishopAttacks(int sq, uint64_t block)
     return result;
 }
 
+void PrintU64(const uint64_t board)
+{
+    int i;
+    for(i = 63; i >= 0; --i)
+    {
+        printf("%i", (int)(1&(board>>i)));
+        if(i%8 == 0) {printf("\n");}
+    }
+    printf("\n");
+    return;
+}
+
 void InitMagics()
 {
     uint64_t b, *index;
     int sq;
 
+    // Pawns
+    for (sq = 0; sq < 64; sq++) {
+        uint64_t from = (uint64_t)1<<sq;
+        PawnMask[WHITE][sq] = ((from << 7) &~FileHMask) | ((from << 9) &~FileAMask);
+        PawnMask[BLACK][sq] = ((from >> 7) &~FileAMask) | ((from >> 9) &~FileHMask);
+    }
+
+    // Knights
+    for (sq = 0; sq < 64; sq++) {
+        uint64_t from = (uint64_t)1<<sq;
+        KnightMask[sq]  = (from>>17) & (~FileHMask); // Up 2 right 1
+        KnightMask[sq] |= (from>>15) & (~FileAMask); // Up 2 left 1
+        KnightMask[sq] |= (from<<17) & (~FileAMask); // Down 2 left 1
+        KnightMask[sq] |= (from<<15) & (~FileHMask); // Down 2 right 1
+        KnightMask[sq] |= (from>>10) & ~(FileGMask|FileHMask); // Right 2 up 1
+        KnightMask[sq] |= (from<<6)  & ~(FileGMask|FileHMask); // Right 2 down 1
+        KnightMask[sq] |= (from>>6)  & ~(FileAMask|FileBMask); // Left 2 up 1
+        KnightMask[sq] |= (from<<10) & ~(FileAMask|FileBMask); // Left 2 down 1
+    }
+    
     // Bishops
     for (sq = 0; sq < 64; sq++) {
         b = 0;
         BishopMask[sq] = CalcBishopMask(sq);
 
         do {
-            index = (BishopOffset[sq] + (((b & BishopMask[sq]) * BishopMagic[sq]) >> 55));
+            index = (uint64_t*)(BishopOffset[sq] + (((b & BishopMask[sq]) * BishopMagic[sq]) >> 55));
             *index = CalcBishopAttacks(sq, b);
         } while ((b = SNOOB(BishopMask[sq], b)));
     }
@@ -256,8 +308,22 @@ void InitMagics()
         RookMask[sq] = CalcRookMask(sq);
 
         do {
-            index = (RookOffset[sq] + (((b & RookMask[sq]) * RookMagic[sq]) >> 52));
+            index = (uint64_t*)(RookOffset[sq] + (((b & RookMask[sq]) * RookMagic[sq]) >> 52));
             *index = CalcRookAttacks(sq, b);
         } while ((b = SNOOB(RookMask[sq], b)));
+    }
+    
+    // Kings
+    for(sq = 0; sq < 64; ++sq)
+    {
+        uint64_t from = (uint64_t)1<<sq;
+        KingMask[sq]  = (from>>8); // Up 1
+        KingMask[sq] |= (from<<8); // Down 1
+        KingMask[sq] |= (from>>1) & (~FileHMask); // Right 1
+        KingMask[sq] |= (from<<1) & (~FileAMask); // Left 1
+        KingMask[sq] |= (from>>7) & (~FileAMask); // Up 1 Left 1
+        KingMask[sq] |= (from>>9) & (~FileHMask); // Up 1 Right 1
+        KingMask[sq] |= (from<<7) & (~FileHMask); // Down 1 Right 1
+        KingMask[sq] |= (from<<9) & (~FileAMask); // Down 1 Left 1
     }
 }

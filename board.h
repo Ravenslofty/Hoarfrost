@@ -61,6 +61,24 @@ enum { WHITE, BLACK, FORCE };
 enum { PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING };
 enum { QUIET, CASTLE, CAPTURE, ENPASSANT, PROMOTION, CAPTURE_PROMOTION, DOUBLE_PUSH };
 
+static const uint64_t FileAMask = 0x0101010101010101ULL;
+static const uint64_t FileBMask = 0x0202020202020202ULL;
+static const uint64_t FileCMask = 0x0404040404040404ULL;
+static const uint64_t FileDMask = 0x0808080808080808ULL;
+static const uint64_t FileEMask = 0x1010101010101010ULL;
+static const uint64_t FileFMask = 0x2020202020202020ULL;
+static const uint64_t FileGMask = 0x4040404040404040ULL;
+static const uint64_t FileHMask = 0x8080808080808080ULL;
+
+static const uint64_t Rank1Mask = 0x00000000000000FFULL;
+static const uint64_t Rank2Mask = 0x000000000000FF00ULL;
+static const uint64_t Rank3Mask = 0x0000000000FF0000ULL;
+static const uint64_t Rank4Mask = 0x00000000FF000000ULL;
+static const uint64_t Rank5Mask = 0x000000FF00000000ULL;
+static const uint64_t Rank6Mask = 0x0000FF0000000000ULL;
+static const uint64_t Rank7Mask = 0x00FF000000000000ULL;
+static const uint64_t Rank8Mask = 0xFF00000000000000ULL;
+
 #define PRINT_MOVE(m) printf("%c%d%c%d", 'a' + COL (((m).from)&63), 1 + ROW (((m).from)&63), 'a' + COL (((m).dest)&63), 1 + ROW (((m).dest)&63))
 
 #endif // BOARD_H

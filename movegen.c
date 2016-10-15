@@ -27,7 +27,6 @@
 
 #include "board.h"
 #include "functions.h"
-#include "m42.h"
 
 static inline void AddMove(struct Move * m, int * movecount, int from, int dest, int type, int prompiece, int color, int piece)
 {
@@ -145,7 +144,7 @@ int GenerateQuiets(struct Board * b, struct Move * m)
     while (knights) {
         from = lsb(knights);
 
-        attacks = knight_attacks(from) & empty;
+        attacks = KnightAttacks(from) & empty;
 
         while (attacks) {
             dest = lsb(attacks);
@@ -164,7 +163,7 @@ int GenerateQuiets(struct Board * b, struct Move * m)
     while (bishops) {
         from = lsb(bishops);
 
-        attacks = bishop_attacks(from, occ) & empty;
+        attacks = BishopAttacks(from, occ) & empty;
 
         while (attacks) {
             dest = lsb(attacks);
@@ -183,7 +182,7 @@ int GenerateQuiets(struct Board * b, struct Move * m)
     while (rooks) {
         from = lsb(rooks);
 
-        attacks = rook_attacks(from, occ) & empty;
+        attacks = RookAttacks(from, occ) & empty;
 
         while (attacks) {
             dest = lsb(attacks);
@@ -202,7 +201,7 @@ int GenerateQuiets(struct Board * b, struct Move * m)
     while (queens) {
         from = lsb(queens);
 
-        attacks = queen_attacks(from, occ) & empty;
+        attacks = QueenAttacks(from, occ) & empty;
 
         while (attacks) {
             dest = lsb(attacks);
@@ -221,7 +220,7 @@ int GenerateQuiets(struct Board * b, struct Move * m)
     while (kings) {
         from = lsb(kings);
 
-        attacks = king_attacks(from) & empty;
+        attacks = KingAttacks(from) & empty;
 
         while (attacks) {
             dest = lsb(attacks);
@@ -325,7 +324,7 @@ int GenerateCaptures(struct Board * b, struct Move * m)
 
         // En passant
         if (b->ep != INVALID) {
-            attacks = pawn_attacks(BLACK, b->ep) & b->pieces[PAWN] & b->colors[WHITE];
+            attacks = PawnAttacks(BLACK, b->ep) & b->pieces[PAWN] & b->colors[WHITE];
 
             while (attacks) {
                 from = lsb(attacks);
@@ -390,7 +389,7 @@ int GenerateCaptures(struct Board * b, struct Move * m)
 
         // En passant
         if (b->ep != INVALID) {
-            attacks = pawn_attacks(WHITE, b->ep) & b->pieces[PAWN] & b->colors[BLACK];
+            attacks = PawnAttacks(WHITE, b->ep) & b->pieces[PAWN] & b->colors[BLACK];
 
             while (attacks) {
                 from = lsb(attacks);
@@ -408,7 +407,7 @@ int GenerateCaptures(struct Board * b, struct Move * m)
     while (knights) {
         from = lsb(knights);
 
-        attacks = knight_attacks(from) & b->colors[!b->side];
+        attacks = KnightAttacks(from) & b->colors[!b->side];
 
         while (attacks) {
             dest = lsb(attacks);
@@ -427,7 +426,7 @@ int GenerateCaptures(struct Board * b, struct Move * m)
     while (bishops) {
         from = lsb(bishops);
 
-        attacks = bishop_attacks(from, occ) & b->colors[!b->side];
+        attacks = BishopAttacks(from, occ) & b->colors[!b->side];
 
         while (attacks) {
             dest = lsb(attacks);
@@ -446,7 +445,7 @@ int GenerateCaptures(struct Board * b, struct Move * m)
     while (rooks) {
         from = lsb(rooks);
 
-        attacks = rook_attacks(from, occ) & b->colors[!b->side];
+        attacks = RookAttacks(from, occ) & b->colors[!b->side];
 
         while (attacks) {
             dest = lsb(attacks);
@@ -465,7 +464,7 @@ int GenerateCaptures(struct Board * b, struct Move * m)
     while (queens) {
         from = lsb(queens);
 
-        attacks = queen_attacks(from, occ) & b->colors[!b->side];
+        attacks = QueenAttacks(from, occ) & b->colors[!b->side];
 
         while (attacks) {
             dest = lsb(attacks);
@@ -484,7 +483,7 @@ int GenerateCaptures(struct Board * b, struct Move * m)
     while (kings) {
         from = lsb(kings);
 
-        attacks = king_attacks(from) & b->colors[!b->side];
+        attacks = KingAttacks(from) & b->colors[!b->side];
 
         while (attacks) {
             dest = lsb(attacks);

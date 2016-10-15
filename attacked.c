@@ -26,26 +26,25 @@
 
 #include "board.h"
 #include "functions.h"
-#include "m42.h"
 
 bool IsAttacked(struct Board * b, int side, int square)
 {
     uint64_t pawns, knights, bishopsqueens, rooksqueens, kings;
 
     pawns = b->pieces[PAWN] & b->colors[side];
-    if (pawn_attacks(!side, square) & pawns) return true;
+    if (PawnAttacks(!side, square) & pawns) return true;
 
     knights = b->pieces[KNIGHT] & b->colors[side];
-    if (knight_attacks(square) & knights) return true;
+    if (KnightAttacks(square) & knights) return true;
 
     kings = b->pieces[KING] & b->colors[side];
-    if (king_attacks(square) & kings) return true;
+    if (KingAttacks(square) & kings) return true;
 
     bishopsqueens = (b->pieces[BISHOP] | b->pieces[QUEEN]) & b->colors[side];
-    if (bishop_attacks(square, (b->colors[WHITE] | b->colors[BLACK])) & bishopsqueens) return true;
+    if (BishopAttacks(square, (b->colors[WHITE] | b->colors[BLACK])) & bishopsqueens) return true;
 
     rooksqueens = (b->pieces[ROOK] | b->pieces[QUEEN]) & b->colors[side];
-    if (rook_attacks(square, (b->colors[WHITE] | b->colors[BLACK])) & rooksqueens) return true;
+    if (RookAttacks(square, (b->colors[WHITE] | b->colors[BLACK])) & rooksqueens) return true;
 
     return false;
 }

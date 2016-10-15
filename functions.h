@@ -30,6 +30,23 @@
 
 #include "board.h"
 
+static inline int msb(uint64_t b) {
+    return 63 ^ __builtin_clzll(b);
+}
+
+static inline int lsb(uint64_t b) {
+    return __builtin_ctzll(b);
+}
+
+// magic.c
+void InitMagics();
+uint64_t PawnAttacks(const int side, const int sq);
+uint64_t KnightAttacks(const int sq);
+uint64_t BishopAttacks(const int sq, const uint64_t occ);
+uint64_t RookAttacks(const int sq, const uint64_t occ);
+uint64_t QueenAttacks(const int sq, const uint64_t occ);
+uint64_t KingAttacks(const int sq);
+
 // attacked.c
 extern bool IsAttacked(struct Board * b, int side, int square);
 extern bool IsIllegal(struct Board * b);
