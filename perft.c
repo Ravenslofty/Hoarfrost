@@ -43,7 +43,7 @@ uint64_t Perft(struct Board * b, int depth)
 
     for (i = 0; i < movecount; i++) {
 
-        c = *b;
+        //c = *b;
 
         MakeMove(b, &u, m[i]);
 
@@ -56,6 +56,7 @@ uint64_t Perft(struct Board * b, int depth)
 
         UnmakeMove(b, &u, m[i]);
 
+#ifndef NDEBUG
         for (j = PAWN; j <= KING; j++) {
             if (c.pieces[j] != b->pieces[j])
                 printf("!!! pieces[%d] b: %llX c: %llX\n", j, b->pieces[j], c.pieces[j]);
@@ -65,13 +66,14 @@ uint64_t Perft(struct Board * b, int depth)
             if (c.colors[j] != b->colors[j])
                 printf("!!! colors[%d] b: %llX c: %llX\n", j, b->colors[j], c.colors[j]);
         }
+#endif
     }
 
     movecount = GenerateQuiets(b, m);
 
     for (i = 0; i < movecount; i++) {
 
-        c = *b;
+        //c = *b;
 
         MakeMove(b, &u, m[i]);
 
@@ -84,6 +86,7 @@ uint64_t Perft(struct Board * b, int depth)
 
         UnmakeMove(b, &u, m[i]);
 
+#ifndef NDEBUG
         for (j = PAWN; j <= KING; j++) {
             if (c.pieces[j] != b->pieces[j])
                 printf("!!! pieces[%d] b: %llX c: %llX\n", j, b->pieces[j], c.pieces[j]);
@@ -93,6 +96,7 @@ uint64_t Perft(struct Board * b, int depth)
             if (c.colors[j] != b->colors[j])
                 printf("!!! colors[%d] b: %llX c: %llX\n", j, b->colors[j], c.colors[j]);
         }
+#endif
     }
     return nodes;
 }
@@ -113,7 +117,7 @@ uint64_t Divide(struct Board * b, int depth)
 
     for (i = 0; i < movecount; i++) {
 
-        c = *b;
+        //c = *b;
 
         MakeMove(b, &u, m[i]);
 
@@ -130,6 +134,7 @@ uint64_t Divide(struct Board * b, int depth)
 
         printf(" %llu\n", tmp);
 
+#ifndef NDEBUG
         for (j = PAWN; j <= KING; j++) {
             if (c.pieces[j] != b->pieces[j])
                 printf("!!! pieces[%d] b: %llX c: %llX\n", j, b->pieces[j], c.pieces[j]);
@@ -139,13 +144,14 @@ uint64_t Divide(struct Board * b, int depth)
             if (c.colors[j] != b->colors[j])
                 printf("!!! colors[%d] b: %llX c: %llX\n", j, b->colors[j], c.colors[j]);
         }
+#endif
     }
 
     movecount = GenerateQuiets(b, m);
 
     for (i = 0; i < movecount; i++) {
 
-        c = *b;
+        //c = *b;
 
         MakeMove(b, &u, m[i]);
 
@@ -162,6 +168,7 @@ uint64_t Divide(struct Board * b, int depth)
 
         printf(" %llu\n", tmp);
 
+#ifndef NDEBUG
         for (j = PAWN; j <= KING; j++) {
             if (c.pieces[j] != b->pieces[j])
                 printf("!!! pieces[%d] b: %llX c: %llX\n", j, b->pieces[j], c.pieces[j]);
@@ -171,6 +178,7 @@ uint64_t Divide(struct Board * b, int depth)
             if (c.colors[j] != b->colors[j])
                 printf("!!! colors[%d] b: %llX c: %llX\n", j, b->colors[j], c.colors[j]);
         }
+#endif
     }
     return nodes;
 }
