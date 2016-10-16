@@ -117,6 +117,7 @@ int main()
             printf("\n");
             printf("side to move:   %d\n", b.side);
             printf("en passant sq:  %d\n", b.ep);
+            printf("castle rights:  %d\n", b.castle);
             continue;
         }
 

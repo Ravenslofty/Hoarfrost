@@ -79,6 +79,19 @@ static const uint64_t Rank6Mask = 0x0000FF0000000000ULL;
 static const uint64_t Rank7Mask = 0x00FF000000000000ULL;
 static const uint64_t Rank8Mask = 0xFF00000000000000ULL;
 
-#define PRINT_MOVE(m) printf("%c%d%c%d", 'a' + COL (((m).from)&63), 1 + ROW (((m).from)&63), 'a' + COL (((m).dest)&63), 1 + ROW (((m).dest)&63))
+#define PRINT_MOVE(m) PrintMove(b, m)
+
+static inline void PrintMove(struct Board * b, struct Move m)
+{
+    static const char promotechar[6] = {
+        '', 'n', 'b', 'r', 'q', ''
+    };
+
+    printf("%c%d%c%d", 'a' + COL (((m).from)&63), 1 + ROW (((m).from)&63), 'a' + COL (((m).dest)&63), 1 + ROW (((m).dest)&63));
+
+    if (m.type == PROMOTION) {
+        printf("%c", promotechar[m.piece]);
+    }
+}
 
 #endif // BOARD_H
