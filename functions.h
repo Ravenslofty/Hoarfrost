@@ -64,6 +64,11 @@ extern void UnmakeMove(struct Board * b, struct Undo * u, struct Move m);
 extern int GenerateQuiets(struct Board * b, struct Move * m);
 extern int GenerateCaptures(struct Board * b, struct Move * m);
 
+// movesort.c
+extern void InitSort(struct Sort * s);
+extern struct Move * NextMove(struct Board * b, struct Sort * s);
+extern int MoveValue(struct Board * b, struct Move m);
+
 // perft.c
 extern uint64_t Perft(struct Board * b, int depth);
 extern uint64_t Divide(struct Board * b, int depth);

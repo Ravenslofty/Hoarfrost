@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-c -Wall -Wno-format -Wno-char-subscripts -pipe -O3 -flto
 LDFLAGS=-flto
-SOURCES=attacked.c fen.c magic.c main.c makemove.c movegen.c perft.c
+SOURCES=attacked.c fen.c magic.c main.c makemove.c movegen.c movesort.c perft.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=dorpsgek
 

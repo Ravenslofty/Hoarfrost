@@ -44,12 +44,20 @@ struct Move {
     unsigned char prom:3;
     unsigned char color:1;
     unsigned char piece:3;
+    signed short  score:12;
 };
 
 struct Undo {
     char ep;
     char cap;
     char castle;
+};
+
+struct Sort {
+    char state;
+    struct Move m[128];
+    int movecount;
+    int i;
 };
 
 #define COL(x) ((x)&7)
@@ -60,6 +68,7 @@ struct Undo {
 enum { WHITE, BLACK, FORCE };
 enum { PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING };
 enum { QUIET, CASTLE, CAPTURE, ENPASSANT, PROMOTION, CAPTURE_PROMOTION, DOUBLE_PUSH };
+enum { CAPTURES, QUIETS };
 
 static const uint64_t FileAMask = 0x0101010101010101ULL;
 static const uint64_t FileBMask = 0x0202020202020202ULL;
