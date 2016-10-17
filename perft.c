@@ -173,7 +173,7 @@ uint64_t Divide(struct Board * b, int depth)
 
         PRINT_MOVE(m[i]);
 
-        nodes += tmp = PerftWMoveSort(b, depth - 1);
+        nodes += tmp = Perft(b, depth - 1);
 
         UnmakeMove(b, &u, m[i]);
 
@@ -207,7 +207,7 @@ uint64_t Divide(struct Board * b, int depth)
 
         PRINT_MOVE(m[i]);
 
-        nodes += tmp = PerftWMoveSort(b, depth - 1);
+        nodes += tmp = Perft(b, depth - 1);
 
         UnmakeMove(b, &u, m[i]);
 

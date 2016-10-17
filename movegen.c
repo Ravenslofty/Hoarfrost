@@ -85,7 +85,7 @@ int GenerateQuiets(struct Board * b, struct Move * m)
         }
 
         // Promotions
-        singles = ((pawns & Rank7Mask) >> 8) & empty;
+        singles = ((pawns & Rank7Mask) << 8) & empty;
 
         while (singles) {
             dest = lsb(singles);
