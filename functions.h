@@ -66,7 +66,7 @@ extern int GenerateCaptures(struct Board * b, struct Move * m);
 
 // movesort.c
 extern void InitSort(struct Sort * s);
-extern struct Move * NextMove(struct Board * b, struct Sort * s);
+extern int NextMove(struct Board * b, struct Sort * s, struct Move * m);
 extern int MoveValue(struct Board * b, struct Move m);
 
 // perft.c

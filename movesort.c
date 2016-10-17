@@ -40,7 +40,7 @@ void InitSort(struct Sort * s)
     s->movecount = 0;
 }
 
-struct Move * NextMove(struct Board * b, struct Sort * s)
+int NextMove(struct Board * b, struct Sort * s, struct Move * m)
 {
     switch (s->state) {
     case CAPTURES:
@@ -51,7 +51,8 @@ struct Move * NextMove(struct Board * b, struct Sort * s)
 
             if (s->movecount != 0) {
                 s->i = 0;
-                return &s->m[0];
+                m = &s->m[0];
+                return 1;
             } else {
                 s->movecount = 0;
                 s->state = QUIETS;
@@ -59,7 +60,8 @@ struct Move * NextMove(struct Board * b, struct Sort * s)
         } else {
             if (s->i < s->movecount) {
                 s->i++;
-                return &s->m[s->i];
+                m = &s->m[s->i];
+                return 1;
             } else {
                 s->movecount = 0;
                 s->state = QUIETS;
@@ -74,24 +76,25 @@ struct Move * NextMove(struct Board * b, struct Sort * s)
             qsort(s->m, s->movecount, sizeof(struct Move), CompareMoves);
 
             if (s->movecount != 0) {
-                s->i = 0;
-                return &s->m[0];
+                m = &s->m[0];
+                return 1;
             } else {
-                return NULL;
+                return 0;
             }
         } else {
             if (s->i < s->movecount) {
                 s->i++;
-                return &s->m[s->i];
+                m = &s->m[s->i];
+                return 1;
             } else {
-                return NULL;
+                return 0;
             }
         }
     default:
-        return NULL;
+        return 0;
     }
 
-    return NULL;
+    return 0;
 };
 
 int MoveValue(struct Board * b, struct Move m)

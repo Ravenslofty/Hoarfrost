@@ -101,6 +101,51 @@ uint64_t Perft(struct Board * b, int depth)
     return nodes;
 }
 
+uint64_t PerftWMoveSort(struct Board * b, int depth)
+{
+    struct Sort s;
+    struct Move m;
+    struct Undo u;
+    struct Board c;
+    int movecount, i, j;
+    uint64_t nodes = 0, tmp;
+
+    if (depth == 0) {
+        return 1;
+    }
+
+    InitSort(&s);
+
+    while (NextMove(b, &s, &m)) {
+
+        printf(".\n");
+
+        MakeMove(b, &u, m);
+
+        if (IsIllegal(b)) {
+            UnmakeMove(b, &u, m);
+            continue;
+        }
+
+        nodes += tmp = Perft(b, depth - 1);
+
+        UnmakeMove(b, &u, m);
+
+#ifndef NDEBUG
+        for (j = PAWN; j <= KING; j++) {
+            if (c.pieces[j] != b->pieces[j])
+                printf("!!! pieces[%d] b: %llX c: %llX\n", j, b->pieces[j], c.pieces[j]);
+        }
+
+        for (j = WHITE; j <= BLACK; j++) {
+            if (c.colors[j] != b->colors[j])
+                printf("!!! colors[%d] b: %llX c: %llX\n", j, b->colors[j], c.colors[j]);
+        }
+#endif
+    }
+    return nodes;
+}
+
 uint64_t Divide(struct Board * b, int depth)
 {
     struct Move m[128];
@@ -128,7 +173,7 @@ uint64_t Divide(struct Board * b, int depth)
 
         PRINT_MOVE(m[i]);
 
-        nodes += tmp = Perft(b, depth - 1);
+        nodes += tmp = PerftWMoveSort(b, depth - 1);
 
         UnmakeMove(b, &u, m[i]);
 
@@ -162,7 +207,7 @@ uint64_t Divide(struct Board * b, int depth)
 
         PRINT_MOVE(m[i]);
 
-        nodes += tmp = Perft(b, depth - 1);
+        nodes += tmp = PerftWMoveSort(b, depth - 1);
 
         UnmakeMove(b, &u, m[i]);
 
