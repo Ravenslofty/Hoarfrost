@@ -98,7 +98,7 @@ static inline void PrintMove(struct Board * b, struct Move m)
 
     printf("%c%d%c%d", 'a' + COL (((m).from)&63), 1 + ROW (((m).from)&63), 'a' + COL (((m).dest)&63), 1 + ROW (((m).dest)&63));
 
-    if (m.type == PROMOTION) {
+    if (m.type == PROMOTION || m.type == CAPTURE_PROMOTION) {
         printf("%c", promotechar[m.prom]);
     }
 }
