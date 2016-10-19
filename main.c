@@ -52,6 +52,11 @@ int main()
             continue;
         }
 
+        if (!strncmp(str, "epd", 3)) {
+            ParseFEN(&b, str+4);
+            continue;
+        }
+
         if (!strncmp(str, "new", 3)) {
             ParseFEN(&b, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
             continue;
@@ -82,6 +87,23 @@ int main()
             time = (float)(((float)(stop) - (float)(start)) / CLOCKS_PER_SEC);
 
             printf("Nodes: %llu in %.3f seconds\n", nodes, time);
+            continue;
+        }
+
+        if (!strncmp(str, "perft", 5)) {
+            int depth;
+            uint64_t correct, result;
+
+            sscanf(str, "perft %d %llu", &depth, &correct);
+
+            result = Perft(&b, depth);
+
+            if (result == correct) {
+                printf("Depth %d OK\n", depth);
+            } else {
+                printf("Depth %d FAILED: expected %llu, got %llu\n", depth, correct, result);
+            }
+
             continue;
         }
 
