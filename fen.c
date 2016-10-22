@@ -173,19 +173,19 @@ void ParseFEN(struct Board * b, char * fen)
     //   use that order without scanning.
     b->castle = 0;
     if (fen[fenidx] == 'K') {
-        b->castle |= 8;
+        b->castle |= 1;
         fenidx++;
     }
     if (fen[fenidx] == 'Q') {
-        b->castle |= 4;
-        fenidx++;
-    }
-    if (fen[fenidx] == 'k') {
         b->castle |= 2;
         fenidx++;
     }
+    if (fen[fenidx] == 'k') {
+        b->castle |= 4;
+        fenidx++;
+    }
     if (fen[fenidx] == 'q') {
-        b->castle |= 1;
+        b->castle |= 8;
         fenidx++;
     }
     // "But what about the case where there are no castling rights?"

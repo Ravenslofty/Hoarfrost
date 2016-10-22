@@ -1,0 +1,42 @@
+# Initial position
+epd rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+perft 1 20
+perft 2 400
+perft 3 8902
+perft 4 197281
+perft 5 4865609
+perft 6 119060324
+
+# Kiwipete
+epd r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1
+perft 1 48
+perft 2 2039
+perft 3 97862
+perft 4 4085603
+perft 5 193690690
+
+# CPW position 3 (for en passant bugs)
+epd 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1
+perft 1 14
+perft 2 191
+perft 3 2812
+perft 4 43238
+perft 5 674624
+perft 6 11030083
+perft 7 178633661
+
+# CPW position 4 (seems to catch castling bugs?)
+epd r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1
+perft 1 6
+perft 2 264
+perft 3 9467
+perft 4 422333
+perft 5 15833292
+
+# CPW position 4 mirrored (to catch symmetry bugs)
+epd r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1
+perft 1 6
+perft 2 264
+perft 3 9467
+perft 4 422333
+perft 5 15833292
