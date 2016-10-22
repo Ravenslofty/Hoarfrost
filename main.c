@@ -53,6 +53,7 @@ int main()
         }
 
         if (!strncmp(str, "epd", 3)) {
+            printf("\nPosition: %s\n", str+4);
             ParseFEN(&b, str+4);
             continue;
         }
