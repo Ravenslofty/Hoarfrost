@@ -34,66 +34,23 @@ static inline int CompareMoves(const void * p1, const void * p2)
     if (((struct Move*)p1)->score <  ((struct Move *)p2)->score) return +1;
 }
 
-void InitSort(struct Sort * s)
+void InitSort(struct Board * b, struct Sort * s)
 {
-    s->state = CAPTURES;
-    s->movecount = 0;
+    s->movecount = GenerateCaptures(b, s->m, 0);
+    s->movecount = GenerateQuiets(b, s->m, s->movecount);
+
+    qsort(s->m, s->movecount, sizeof(struct Move), CompareMoves);
+
+    s->i = 0;
 }
 
-int NextMove(struct Board * b, struct Sort * s, struct Move * m)
+int NextMove(struct Sort * s, struct Move * m)
 {
-    switch (s->state) {
-    case CAPTURES:
-        if (s->movecount == 0) {
-            s->movecount = GenerateCaptures(b, s->m);
-
-            qsort(s->m, s->movecount, sizeof(struct Move), CompareMoves);
-
-            if (s->movecount != 0) {
-                s->i = 0;
-                m = &s->m[0];
-                return 1;
-            } else {
-                s->movecount = 0;
-                s->state = QUIETS;
-            }
-        } else {
-            if (s->i < s->movecount) {
-                s->i++;
-                m = &s->m[s->i];
-                return 1;
-            } else {
-                s->movecount = 0;
-                s->state = QUIETS;
-            }
-        }
-
-    /* Fall through if we don't have a move. */
-    case QUIETS:
-        if (s->movecount == 0) {
-            s->movecount = GenerateQuiets(b, s->m);
-
-            qsort(s->m, s->movecount, sizeof(struct Move), CompareMoves);
-
-            if (s->movecount != 0) {
-                m = &s->m[0];
-                return 1;
-            } else {
-                return 0;
-            }
-        } else {
-            if (s->i < s->movecount) {
-                s->i++;
-                m = &s->m[s->i];
-                return 1;
-            } else {
-                return 0;
-            }
-        }
-    default:
-        return 0;
+    if (s->i < s->movecount) {
+        *m = s->m[s->i];
+        s->i++;
+        return 1;
     }
-
     return 0;
 };
 

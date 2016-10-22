@@ -29,7 +29,8 @@
 
 uint64_t Perft(struct Board * b, int depth)
 {
-    struct Move m[128];
+    struct Sort s;
+    struct Move m;
     struct Undo u;
     struct Board c;
     int movecount, i, j;
@@ -39,69 +40,26 @@ uint64_t Perft(struct Board * b, int depth)
         return 1;
     }
 
-    movecount = GenerateCaptures(b, m);
+    InitSort(b, &s);
 
-    for (i = 0; i < movecount; i++) {
+    while (NextMove(&s, &m)) {
 
-        //c = *b;
-
-        MakeMove(b, &u, m[i]);
+        MakeMove(b, &u, m);
 
         if (IsIllegal(b)) {
-            UnmakeMove(b, &u, m[i]);
+            UnmakeMove(b, &u, m);
             continue;
         }
 
         nodes += tmp = Perft(b, depth - 1);
 
-        UnmakeMove(b, &u, m[i]);
-
-#ifndef NDEBUG
-        for (j = PAWN; j <= KING; j++) {
-            if (c.pieces[j] != b->pieces[j])
-                printf("!!! pieces[%d] b: %llX c: %llX\n", j, b->pieces[j], c.pieces[j]);
-        }
-
-        for (j = WHITE; j <= BLACK; j++) {
-            if (c.colors[j] != b->colors[j])
-                printf("!!! colors[%d] b: %llX c: %llX\n", j, b->colors[j], c.colors[j]);
-        }
-#endif
+        UnmakeMove(b, &u, m);
     }
 
-    movecount = GenerateQuiets(b, m);
-
-    for (i = 0; i < movecount; i++) {
-
-        //c = *b;
-
-        MakeMove(b, &u, m[i]);
-
-        if (IsIllegal(b)) {
-            UnmakeMove(b, &u, m[i]);
-            continue;
-        }
-
-        nodes += tmp = Perft(b, depth - 1);
-
-        UnmakeMove(b, &u, m[i]);
-
-#ifndef NDEBUG
-        for (j = PAWN; j <= KING; j++) {
-            if (c.pieces[j] != b->pieces[j])
-                printf("!!! pieces[%d] b: %llX c: %llX\n", j, b->pieces[j], c.pieces[j]);
-        }
-
-        for (j = WHITE; j <= BLACK; j++) {
-            if (c.colors[j] != b->colors[j])
-                printf("!!! colors[%d] b: %llX c: %llX\n", j, b->colors[j], c.colors[j]);
-        }
-#endif
-    }
     return nodes;
 }
 
-uint64_t PerftWMoveSort(struct Board * b, int depth)
+uint64_t Divide(struct Board * b, int depth)
 {
     struct Sort s;
     struct Move m;
@@ -114,11 +72,9 @@ uint64_t PerftWMoveSort(struct Board * b, int depth)
         return 1;
     }
 
-    InitSort(&s);
+    InitSort(b, &s);
 
-    while (NextMove(b, &s, &m)) {
-
-        printf(".\n");
+    while (NextMove(&s, &m)) {
 
         MakeMove(b, &u, m);
 
@@ -127,103 +83,14 @@ uint64_t PerftWMoveSort(struct Board * b, int depth)
             continue;
         }
 
+        PrintMove(b, m);
+
         nodes += tmp = Perft(b, depth - 1);
 
         UnmakeMove(b, &u, m);
 
-#ifndef NDEBUG
-        for (j = PAWN; j <= KING; j++) {
-            if (c.pieces[j] != b->pieces[j])
-                printf("!!! pieces[%d] b: %llX c: %llX\n", j, b->pieces[j], c.pieces[j]);
-        }
-
-        for (j = WHITE; j <= BLACK; j++) {
-            if (c.colors[j] != b->colors[j])
-                printf("!!! colors[%d] b: %llX c: %llX\n", j, b->colors[j], c.colors[j]);
-        }
-#endif
-    }
-    return nodes;
-}
-
-uint64_t Divide(struct Board * b, int depth)
-{
-    struct Move m[128];
-    struct Undo u;
-    struct Board c;
-    int movecount, i, j;
-    uint64_t nodes = 0, tmp;
-
-    if (depth == 0) {
-        return 1;
-    }
-
-    movecount = GenerateCaptures(b, m);
-
-    for (i = 0; i < movecount; i++) {
-
-        //c = *b;
-
-        MakeMove(b, &u, m[i]);
-
-        if (IsIllegal(b)) {
-            UnmakeMove(b, &u, m[i]);
-            continue;
-        }
-
-        PRINT_MOVE(m[i]);
-
-        nodes += tmp = Perft(b, depth - 1);
-
-        UnmakeMove(b, &u, m[i]);
-
         printf(" %llu\n", tmp);
-
-#ifndef NDEBUG
-        for (j = PAWN; j <= KING; j++) {
-            if (c.pieces[j] != b->pieces[j])
-                printf("!!! pieces[%d] b: %llX c: %llX\n", j, b->pieces[j], c.pieces[j]);
-        }
-
-        for (j = WHITE; j <= BLACK; j++) {
-            if (c.colors[j] != b->colors[j])
-                printf("!!! colors[%d] b: %llX c: %llX\n", j, b->colors[j], c.colors[j]);
-        }
-#endif
     }
 
-    movecount = GenerateQuiets(b, m);
-
-    for (i = 0; i < movecount; i++) {
-
-        //c = *b;
-
-        MakeMove(b, &u, m[i]);
-
-        if (IsIllegal(b)) {
-            UnmakeMove(b, &u, m[i]);
-            continue;
-        }
-
-        PRINT_MOVE(m[i]);
-
-        nodes += tmp = Perft(b, depth - 1);
-
-        UnmakeMove(b, &u, m[i]);
-
-        printf(" %llu\n", tmp);
-
-#ifndef NDEBUG
-        for (j = PAWN; j <= KING; j++) {
-            if (c.pieces[j] != b->pieces[j])
-                printf("!!! pieces[%d] b: %llX c: %llX\n", j, b->pieces[j], c.pieces[j]);
-        }
-
-        for (j = WHITE; j <= BLACK; j++) {
-            if (c.colors[j] != b->colors[j])
-                printf("!!! colors[%d] b: %llX c: %llX\n", j, b->colors[j], c.colors[j]);
-        }
-#endif
-    }
     return nodes;
 }

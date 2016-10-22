@@ -115,7 +115,7 @@ int main()
             tmp.dest = str[11] - 'a';
             tmp.dest += 8*(str[12] - '1');
 
-            n = GenerateQuiets(&b, m);
+            n = GenerateQuiets(&b, m, 0);
             for (i = 0; i < n; i++) {
                 if (m[i].from == tmp.from && m[i].dest == tmp.dest) {
                     MakeMove(&b, &u, m[i]);
@@ -123,7 +123,7 @@ int main()
                 }
             }
 
-            n = GenerateCaptures(&b, m);
+            n = GenerateCaptures(&b, m, 0);
             for (i = 0; i < n; i++) {
                 if (m[i].from == tmp.from && m[i].dest == tmp.dest) {
                     MakeMove(&b, &u, m[i]);

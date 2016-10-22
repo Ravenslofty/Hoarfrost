@@ -43,14 +43,13 @@ static inline void AddMove(struct Board * b, struct Move * m, int * movecount, i
     *movecount = *movecount + 1;
 }
 
-int GenerateQuiets(struct Board * b, struct Move * m)
+int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
 {
     uint64_t pawns, knights, bishops, rooks, queens, kings;
     uint64_t singles, doubles, attacks;
     uint64_t occ, empty;
-    int from, dest, movecount;
+    int from, dest;
 
-    movecount = 0;
     occ = b->colors[WHITE] | b->colors[BLACK];
     empty = ~occ;
 
@@ -258,14 +257,13 @@ int GenerateQuiets(struct Board * b, struct Move * m)
     return movecount;
 }
 
-int GenerateCaptures(struct Board * b, struct Move * m)
+int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
 {
     uint64_t pawns, knights, bishops, rooks, queens, kings;
     uint64_t attacks;
     uint64_t occ, empty;
-    int from, dest, movecount;
+    int from, dest;
 
-    movecount = 0;
     occ = b->colors[WHITE] | b->colors[BLACK];
     empty = ~occ;
 

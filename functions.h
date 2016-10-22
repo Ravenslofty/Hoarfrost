@@ -61,12 +61,12 @@ extern void MakeMove(struct Board * b, struct Undo * u, struct Move m);
 extern void UnmakeMove(struct Board * b, struct Undo * u, struct Move m);
 
 // movegen.c
-extern int GenerateQuiets(struct Board * b, struct Move * m);
-extern int GenerateCaptures(struct Board * b, struct Move * m);
+extern int GenerateQuiets(struct Board * b, struct Move * m, int movecount);
+extern int GenerateCaptures(struct Board * b, struct Move * m, int movecount);
 
 // movesort.c
-extern void InitSort(struct Sort * s);
-extern int NextMove(struct Board * b, struct Sort * s, struct Move * m);
+extern void InitSort(struct Board * b, struct Sort * s);
+extern int NextMove(struct Sort * s, struct Move * m);
 extern int MoveValue(struct Board * b, struct Move m);
 
 // perft.c
