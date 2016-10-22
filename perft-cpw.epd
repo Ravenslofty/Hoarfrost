@@ -40,3 +40,11 @@ perft 2 264
 perft 3 9467
 perft 4 422333
 perft 5 15833292
+
+# CPW position 5 (more castling bugs, and promotion issues)
+epd rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8
+perft 1 44
+perft 2 1486
+perft 3 62379
+perft 4 2103487
+perft 5 89941194

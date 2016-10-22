@@ -13,7 +13,7 @@ clean:
 	rm -rf $(EXECUTABLE) $(OBJECTS)
 
 test: $(EXECUTABLE)
-	cat ./perft-random.epd | ./dorpsgek
+	cat ./perft-cpw.epd | ./dorpsgek
 
 $(EXECUTABLE): $(OBJECTS) 
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
