@@ -66,7 +66,7 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
         while (singles) {
             dest = lsb(singles);
 
-            AddMove(b, m, &movecount, dest - 8, dest, QUIET, INVALID, WHITE, PAWN);
+            AddMove(b, m, &movecount, dest - 8, dest, QUIET, NO_PIECE, WHITE, PAWN);
 
             singles &= singles - 1;
         }
@@ -78,7 +78,7 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
         while (doubles) {
             dest = lsb(doubles);
 
-            AddMove(b, m, &movecount, dest - 16, dest, DOUBLE_PUSH, INVALID, WHITE, PAWN);
+            AddMove(b, m, &movecount, dest - 16, dest, DOUBLE_PUSH, NO_PIECE, WHITE, PAWN);
 
             doubles &= doubles - 1;
         }
@@ -108,7 +108,7 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
 
         while (singles) {
             dest = lsb(singles);
-            AddMove(b, m, &movecount, dest + 8, dest, QUIET, INVALID, BLACK, PAWN);
+            AddMove(b, m, &movecount, dest + 8, dest, QUIET, NO_PIECE, BLACK, PAWN);
             singles &= singles - 1;
         }
 
@@ -118,7 +118,7 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
 
         while (doubles) {
             dest = lsb(doubles);
-            AddMove(b, m, &movecount, dest + 16, dest, DOUBLE_PUSH, INVALID, BLACK, PAWN);
+            AddMove(b, m, &movecount, dest + 16, dest, DOUBLE_PUSH, NO_PIECE, BLACK, PAWN);
             doubles &= doubles - 1;
         }
 
@@ -149,7 +149,7 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
         while (attacks) {
             dest = lsb(attacks);
 
-            AddMove(b, m, &movecount, from, dest, QUIET, INVALID, b->side, KNIGHT);
+            AddMove(b, m, &movecount, from, dest, QUIET, NO_PIECE, b->side, KNIGHT);
 
             attacks &= attacks - 1;
         }
@@ -168,7 +168,7 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
         while (attacks) {
             dest = lsb(attacks);
 
-            AddMove(b, m, &movecount, from, dest, QUIET, INVALID, b->side, BISHOP);
+            AddMove(b, m, &movecount, from, dest, QUIET, NO_PIECE, b->side, BISHOP);
 
             attacks &= attacks - 1;
         }
@@ -187,7 +187,7 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
         while (attacks) {
             dest = lsb(attacks);
 
-            AddMove(b, m, &movecount, from, dest, QUIET, INVALID, b->side, ROOK);
+            AddMove(b, m, &movecount, from, dest, QUIET, NO_PIECE, b->side, ROOK);
 
             attacks &= attacks - 1;
         }
@@ -206,7 +206,7 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
         while (attacks) {
             dest = lsb(attacks);
 
-            AddMove(b, m, &movecount, from, dest, QUIET, INVALID, b->side, QUEEN);
+            AddMove(b, m, &movecount, from, dest, QUIET, NO_PIECE, b->side, QUEEN);
 
             attacks &= attacks - 1;
         }
@@ -225,7 +225,7 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
         while (attacks) {
             dest = lsb(attacks);
 
-            AddMove(b, m, &movecount, from, dest, QUIET, INVALID, b->side, KING);
+            AddMove(b, m, &movecount, from, dest, QUIET, NO_PIECE, b->side, KING);
 
             attacks &= attacks - 1;
         }
@@ -242,14 +242,14 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
             /* Can't castle through check */
             if (!IsAttacked(b,!b->side,from+1) && !IsAttacked(b,!b->side,from+2) &&
                     ((1ULL << (from+1)) & empty) && ((1ULL << (from+2)) & empty)) {
-                AddMove(b, m, &movecount, from, from + 2, CASTLE, INVALID, b->side, KING);
+                AddMove(b, m, &movecount, from, from + 2, CASTLE, NO_PIECE, b->side, KING);
             }
         }
 
         if (b->castle & (2 << (2*(b->side == BLACK)))) {
             if (!IsAttacked(b,!b->side,from-1) && !IsAttacked(b,!b->side,from-2) &&
                     ((1ULL << (from-1)) & empty) && ((1ULL << (from-2)) & empty) && ((1ULL << (from-3)) & empty)) {
-                AddMove(b, m, &movecount, from, from - 2, CASTLE, INVALID, b->side, KING);
+                AddMove(b, m, &movecount, from, from - 2, CASTLE, NO_PIECE, b->side, KING);
             }
         }
     }
@@ -277,7 +277,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
         while (attacks) {
             dest = lsb(attacks);
 
-            AddMove(b, m, &movecount, dest - 7, dest, CAPTURE, INVALID, WHITE, PAWN);
+            AddMove(b, m, &movecount, dest - 7, dest, CAPTURE, NO_PIECE, WHITE, PAWN);
 
             attacks &= attacks - 1;
         }
@@ -302,7 +302,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
         while (attacks) {
             dest = lsb(attacks);
 
-            AddMove(b, m, &movecount, dest - 9, dest, CAPTURE, INVALID, WHITE, PAWN);
+            AddMove(b, m, &movecount, dest - 9, dest, CAPTURE, NO_PIECE, WHITE, PAWN);
 
             attacks &= attacks - 1;
         }
@@ -322,13 +322,13 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
         }
 
         // En passant
-        if (b->ep != INVALID) {
+        if (b->ep != INVALID && b->ep >= 0 && b->ep <= 63) {
             attacks = PawnAttacks(BLACK, b->ep) & b->pieces[PAWN] & b->colors[WHITE];
 
             while (attacks) {
                 from = lsb(attacks);
 
-                AddMove(b, m, &movecount, from, b->ep, ENPASSANT, INVALID, WHITE, PAWN);
+                AddMove(b, m, &movecount, from, b->ep, ENPASSANT, NO_PIECE, WHITE, PAWN);
 
                 attacks &= attacks - 1;
             }
@@ -342,7 +342,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
         while (attacks) {
             dest = lsb(attacks);
 
-            AddMove(b, m, &movecount, dest + 9, dest, CAPTURE, INVALID, BLACK, PAWN);
+            AddMove(b, m, &movecount, dest + 9, dest, CAPTURE, NO_PIECE, BLACK, PAWN);
 
             attacks &= attacks - 1;
         }
@@ -367,7 +367,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
         while (attacks) {
             dest = lsb(attacks);
 
-            AddMove(b, m, &movecount, dest + 7, dest, CAPTURE, INVALID, BLACK, PAWN);
+            AddMove(b, m, &movecount, dest + 7, dest, CAPTURE, NO_PIECE, BLACK, PAWN);
 
             attacks &= attacks - 1;
         }
@@ -387,13 +387,13 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
         }
 
         // En passant
-        if (b->ep != INVALID) {
+        if (b->ep != INVALID && b->ep >= 0 && b->ep <= 63) {
             attacks = PawnAttacks(WHITE, b->ep) & b->pieces[PAWN] & b->colors[BLACK];
 
             while (attacks) {
                 from = lsb(attacks);
 
-                AddMove(b, m, &movecount, from, b->ep, ENPASSANT, INVALID, BLACK, PAWN);
+                AddMove(b, m, &movecount, from, b->ep, ENPASSANT, NO_PIECE, BLACK, PAWN);
 
                 attacks &= attacks - 1;
             }
@@ -411,7 +411,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
         while (attacks) {
             dest = lsb(attacks);
 
-            AddMove(b, m, &movecount, from, dest, CAPTURE, INVALID, b->side, KNIGHT);
+            AddMove(b, m, &movecount, from, dest, CAPTURE, NO_PIECE, b->side, KNIGHT);
 
             attacks &= attacks - 1;
         }
@@ -430,7 +430,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
         while (attacks) {
             dest = lsb(attacks);
 
-            AddMove(b, m, &movecount, from, dest, CAPTURE, INVALID, b->side, BISHOP);
+            AddMove(b, m, &movecount, from, dest, CAPTURE, NO_PIECE, b->side, BISHOP);
 
             attacks &= attacks - 1;
         }
@@ -449,7 +449,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
         while (attacks) {
             dest = lsb(attacks);
 
-            AddMove(b, m, &movecount, from, dest, CAPTURE, INVALID, b->side, ROOK);
+            AddMove(b, m, &movecount, from, dest, CAPTURE, NO_PIECE, b->side, ROOK);
 
             attacks &= attacks - 1;
         }
@@ -468,7 +468,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
         while (attacks) {
             dest = lsb(attacks);
 
-            AddMove(b, m, &movecount, from, dest, CAPTURE, INVALID, b->side, QUEEN);
+            AddMove(b, m, &movecount, from, dest, CAPTURE, NO_PIECE, b->side, QUEEN);
 
             attacks &= attacks - 1;
         }
@@ -487,7 +487,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
         while (attacks) {
             dest = lsb(attacks);
 
-            AddMove(b, m, &movecount, from, dest, CAPTURE, INVALID, b->side, KING);
+            AddMove(b, m, &movecount, from, dest, CAPTURE, NO_PIECE, b->side, KING);
 
             attacks &= attacks - 1;
         }
