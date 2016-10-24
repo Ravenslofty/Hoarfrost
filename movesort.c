@@ -27,6 +27,45 @@
 #include "board.h"
 #include "functions.h"
 
+static int history[64][64];
+static int butterfly[64][64];
+
+void ClearHistory()
+{
+    for (int i = 0; i < 64; i++) {
+        for (int j = 0; j < 64; j++) {
+            history[i][j] = 0;
+            butterfly[i][j] = 0;
+        }
+    }
+}
+
+void ReduceHistory()
+{
+    for (int i = 0; i < 64; i++) {
+        for (int j = 0; j < 64; j++) {
+            history[i][j] >>= 8;
+            butterfly[i][j] >>= 8;
+        }
+    }
+}
+
+void UpdateHistory(struct Sort * s, int depth)
+{
+    int i;
+
+    /* This move failed high, increase the score for it. */
+    if ((s->m[s->i].type&7) != CAPTURE && (s->m[s->i].type&7) != CAPTURE_PROMOTION)
+        history[s->m[s->i].from&63][s->m[s->i].dest&63] += depth*depth;
+
+    /* The others we searched didn't, decrease the score for them. */
+    for (i = 0; i < s->i; i++) {
+        /* But only if they aren't a capture. */
+        if (s->m[i].type&7 != CAPTURE && s->m[i].type&7 != CAPTURE_PROMOTION)
+            butterfly[s->m[i].from&63][s->m[i].dest&63] += 1;
+    }
+}
+
 static inline int CompareMoves(const void * p1, const void * p2)
 {
     if (((struct Move*)p1)->score >  ((struct Move *)p2)->score) return -1;
@@ -67,13 +106,14 @@ int MoveValue(struct Board * b, struct Move m)
 {
     int value = 0, cap;
 
+    char from = m.from & 63;
     char dest = m.dest & 63;
     char piece = m.piece & 7;
 
     uint64_t destbb = 1ULL << dest;
 
-    // MVV/LVA for captures
     if (m.type == CAPTURE || m.type == CAPTURE_PROMOTION) {
+        // MVV/LVA for captures
         cap = INVALID;
         if (destbb & b->pieces[PAWN])
             cap = PAWN;
@@ -92,9 +132,10 @@ int MoveValue(struct Board * b, struct Move m)
 
         // Put captures at front of move list.
         value += 2000;
+    } else {
+        // History Heuristic for quiet moves.
+        value = history[from][dest] / (butterfly[from][dest]+1);
     }
-
-    // TODO: quiet move sorting.
 
     return value;
 }

@@ -109,6 +109,8 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
                 first++;
             cuts++;
 
+            UpdateHistory(&s, depth);
+
             return beta;
         }
 

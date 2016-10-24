@@ -65,9 +65,9 @@ void MakeMove(struct Board * b, struct Undo * u, struct Move m)
 
     case DOUBLE_PUSH:
         if (b->side == WHITE) {
-            b->ep = m.dest - 8;
+            b->ep = dest - 8;
         } else {
-            b->ep = m.dest + 8;
+            b->ep = dest + 8;
         }
         break;
 

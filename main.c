@@ -63,6 +63,8 @@ int main()
 
     ParseFEN(&b, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
+    ClearHistory();
+
     setvbuf(stdout, NULL, _IONBF, 0);
 
     while (1) {
@@ -75,9 +77,11 @@ int main()
             cuts = 0;
             finish = 0;
 
+            ClearHistory();
+
             start = ReadClock();
 
-            for (depth = 1; depth <= 7; depth++) {
+            for (depth = 1; depth <= 8; depth++) {
 
                 int score = Search(&b, depth, -10000, +10000, 1, &pv);
 
@@ -140,6 +144,7 @@ int main()
 
         if (!strncmp(str, "new", 3)) {
             ParseFEN(&b, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+            ClearHistory();
             continue;
         }
 

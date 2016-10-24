@@ -72,6 +72,10 @@ extern void InitSort(struct Board * b, struct Sort * s);
 extern int NextMove(struct Sort * s, struct Move * m);
 extern int MoveValue(struct Board * b, struct Move m);
 
+extern void ClearHistory();
+extern void ReduceHistory();
+extern void UpdateHistory(struct Sort * s, int depth);
+
 // perft.c
 extern uint64_t Perft(struct Board * b, int depth);
 extern uint64_t Divide(struct Board * b, int depth);
