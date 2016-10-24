@@ -26,6 +26,12 @@
 #include <string.h>
 #include <time.h>
 
+#ifndef WINDOWS
+#include <sys/time.h>
+#else
+#include <windows.h>
+#endif // WINDOWS
+
 #include "board.h"
 #include "functions.h"
 
@@ -71,7 +77,7 @@ int main()
 
             start = ReadClock();
 
-            for (depth = 1; depth <= 8; depth++) {
+            for (depth = 1; depth <= 7; depth++) {
 
                 int score = Search(&b, depth, -10000, +10000, 1, &pv);
 
