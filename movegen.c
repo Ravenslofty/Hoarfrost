@@ -94,7 +94,6 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
             AddMove(b, m, &movecount, dest - 8, dest, PROMOTION, BISHOP, WHITE, PAWN);
             AddMove(b, m, &movecount, dest - 8, dest, PROMOTION, KNIGHT, WHITE, PAWN);
 
-
             singles &= singles - 1;
         }
     } else {
@@ -132,7 +131,6 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
             AddMove(b, m, &movecount, dest + 8, dest, PROMOTION, ROOK, BLACK, PAWN);
             AddMove(b, m, &movecount, dest + 8, dest, PROMOTION, BISHOP, BLACK, PAWN);
             AddMove(b, m, &movecount, dest + 8, dest, PROMOTION, KNIGHT, BLACK, PAWN);
-
 
             singles &= singles - 1;
         }
