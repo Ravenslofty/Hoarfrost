@@ -44,6 +44,15 @@ void InitSort(struct Board * b, struct Sort * s)
     s->i = 0;
 }
 
+void InitSortQuies(struct Board * b, struct Sort * s)
+{
+    s->movecount = GenerateCaptures(b, s->m, 0);
+
+    qsort(s->m, s->movecount, sizeof(struct Move), CompareMoves);
+
+    s->i = 0;
+}
+
 int NextMove(struct Sort * s, struct Move * m)
 {
     if (s->i < s->movecount) {
@@ -56,7 +65,6 @@ int NextMove(struct Sort * s, struct Move * m)
 
 int MoveValue(struct Board * b, struct Move m)
 {
-    static int piecevals[6] = { 100, 300, 300, 500, 900, 2000 };
     int value = 0, cap;
 
     char dest = m.dest & 63;
@@ -81,6 +89,9 @@ int MoveValue(struct Board * b, struct Move m)
             cap = KING;
 
         value += piecevals[cap] - piece;
+
+        // Put captures at front of move list.
+        value += 2000;
     }
 
     // TODO: quiet move sorting.

@@ -29,6 +29,21 @@
 #include "board.h"
 #include "functions.h"
 
+int ReadClock()
+{
+    // returns wall-clock time in msec
+#ifdef WINDOWS
+    return GetTickCount();
+#else
+    struct timeval t;
+
+    gettimeofday(&t, NULL);
+
+    return t.tv_sec*1000 + t.tv_usec/1000;
+
+#endif
+}
+
 int main()
 {
     InitMagics();
@@ -38,13 +53,72 @@ int main()
     struct Move m[128];
     char str[400];
     int i, n;
+    int side = FORCE;
 
     ParseFEN(&b, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
+    setvbuf(stdout, NULL, _IONBF, 0);
+
     while (1) {
-        printf("> ");
+
+        if (b.side == side) {
+            struct PV pv;
+            int start, finish, depth;
+
+            nodes = 0;
+            cuts = 0;
+            finish = 0;
+
+            start = ReadClock();
+
+            for (depth = 1; depth <= 8; depth++) {
+
+                int score = Search(&b, depth, -10000, +10000, 1, &pv);
+
+                finish = ReadClock();
+
+                printf("%d %d %d %d ", depth, score, (finish-start)/10, nodes);
+
+                for (i = 0; i < pv.count; i++) {
+                    PrintMove(&b, pv.moves[i]);
+                    printf(" ");
+                }
+
+                printf("\n");
+            }
+
+            printf("# First: %d Cuts: %d\n", first, cuts);
+
+            if (pv.count) {
+                printf("move ");
+                PrintMove(&b, pv.moves[0]);
+                printf("\n");
+            } else {
+                printf("resign\n");
+
+                continue;
+            }
+
+            MakeMove(&b, &u, pv.moves[0]);
+        }
+
         if (fgets(str, 400, stdin) == NULL) {
             return 0;
+        }
+
+        if (!strncmp(str, "protover 2", 8)) {
+            printf("feature done=0 myname=\"Dorpsgek Corkscrew\" setboard=1 usermove=1 done=1\n");
+            continue;
+        }
+
+        if (!strncmp(str, "go", 2)) {
+            side = b.side;
+            continue;
+        }
+
+        if (!strncmp(str, "force", 5)) {
+            side = FORCE;
+            continue;
         }
 
         if (!strncmp(str, "setboard", 8)) {
@@ -109,29 +183,31 @@ int main()
         }
 
         if (!strncmp(str, "usermove", 8)) {
-            struct Move tmp;
+            struct Move tmp, m;
             tmp.from = str[9] - 'a';
             tmp.from += 8*(str[10] - '1');
             tmp.dest = str[11] - 'a';
             tmp.dest += 8*(str[12] - '1');
 
-            n = GenerateQuiets(&b, m, 0);
-            for (i = 0; i < n; i++) {
-                if (m[i].from == tmp.from && m[i].dest == tmp.dest) {
-                    MakeMove(&b, &u, m[i]);
+            struct Sort s;
+            int found = 0;
+
+            InitSort(&b, &s);
+
+            while (NextMove(&s, &m)) {
+
+                printf("# ");
+                PrintMove(&b, m);
+                printf("\n");
+
+                if ((m.from&63) == tmp.from && (m.dest&63) == tmp.dest) {
+                    MakeMove(&b, &u, m);
+                    found = 1;
                     break;
                 }
             }
 
-            n = GenerateCaptures(&b, m, 0);
-            for (i = 0; i < n; i++) {
-                if (m[i].from == tmp.from && m[i].dest == tmp.dest) {
-                    MakeMove(&b, &u, m[i]);
-                    break;
-                }
-            }
-
-            if (i == n)
+            if (!found)
                 printf("Illegal move\n");
 
 			continue;

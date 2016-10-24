@@ -60,10 +60,17 @@ struct Sort {
     int i;
 };
 
+struct PV {
+    int count;
+    struct Move moves[64];
+};
+
 #define COL(x) ((x)&7)
 #define ROW(x) ((x)>>3)
 
 #define INVALID 64
+
+#define MATE 10000
 
 enum { WHITE, BLACK, FORCE };
 enum { PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING, NO_PIECE };
@@ -87,6 +94,11 @@ static const uint64_t Rank5Mask = 0x000000FF00000000ULL;
 static const uint64_t Rank6Mask = 0x0000FF0000000000ULL;
 static const uint64_t Rank7Mask = 0x00FF000000000000ULL;
 static const uint64_t Rank8Mask = 0xFF00000000000000ULL;
+
+static const int piecevals[6] = { 100, 300, 300, 500, 900, 2000 };
+
+extern int nodes;
+extern int first, cuts;
 
 #define PRINT_MOVE(m) PrintMove(b, m)
 

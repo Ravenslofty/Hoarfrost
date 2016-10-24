@@ -38,19 +38,13 @@ static inline int lsb(uint64_t b) {
     return __builtin_ctzll(b);
 }
 
-// magic.c
-void InitMagics();
-uint64_t PawnAttacks(const int side, const int sq);
-uint64_t KnightAttacks(const int sq);
-uint64_t BishopAttacks(const int sq, const uint64_t occ);
-uint64_t RookAttacks(const int sq, const uint64_t occ);
-uint64_t QueenAttacks(const int sq, const uint64_t occ);
-uint64_t KingAttacks(const int sq);
-
 // attacked.c
 extern bool IsAttacked(struct Board * b, int side, int square);
 extern bool IsIllegal(struct Board * b);
 extern bool IsInCheck(struct Board * b);
+
+// eval.c
+extern int Eval(struct Board * b);
 
 // fen.c
 extern void ClearBoard(struct Board * b);
@@ -59,6 +53,15 @@ extern void ParseFEN(struct Board * b, char * fen);
 // makemove.c
 extern void MakeMove(struct Board * b, struct Undo * u, struct Move m);
 extern void UnmakeMove(struct Board * b, struct Undo * u, struct Move m);
+
+// magic.c
+extern void InitMagics();
+extern uint64_t PawnAttacks(const int side, const int sq);
+extern uint64_t KnightAttacks(const int sq);
+extern uint64_t BishopAttacks(const int sq, const uint64_t occ);
+extern uint64_t RookAttacks(const int sq, const uint64_t occ);
+extern uint64_t QueenAttacks(const int sq, const uint64_t occ);
+extern uint64_t KingAttacks(const int sq);
 
 // movegen.c
 extern int GenerateQuiets(struct Board * b, struct Move * m, int movecount);
@@ -72,5 +75,8 @@ extern int MoveValue(struct Board * b, struct Move m);
 // perft.c
 extern uint64_t Perft(struct Board * b, int depth);
 extern uint64_t Divide(struct Board * b, int depth);
+
+// search.c
+extern int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV * pv);
 
 #endif
