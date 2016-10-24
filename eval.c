@@ -49,6 +49,28 @@ int Eval(struct Board * b)
     value += __builtin_popcountll(b->pieces[QUEEN] & b->colors[WHITE]) * piecevals[QUEEN];
     value -= __builtin_popcountll(b->pieces[QUEEN] & b->colors[BLACK]) * piecevals[QUEEN];
 
+    // PST
+    uint64_t piecebb;
+    int piece;
+
+    for (piece = PAWN; piece <= KING; piece++) {
+        piecebb = b->pieces[piece] & b->colors[WHITE];
+
+        while (piecebb) {
+            value += pst[piece][lsb(piecebb)^56];
+
+            piecebb &= piecebb - 1;
+        }
+
+        piecebb = b->pieces[piece] & b->colors[BLACK];
+
+        while (piecebb) {
+            value -= pst[piece][lsb(piecebb)];
+
+            piecebb &= piecebb - 1;
+        }
+    }
+
     // Side to move
     if (b->side == BLACK)
         value = -value;
