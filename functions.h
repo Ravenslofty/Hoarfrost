@@ -38,6 +38,14 @@ static inline int lsb(uint64_t b) {
     return __builtin_ctzll(b);
 }
 
+static inline int cnt(uint64_t b) {
+    return __builtin_popcountll(b);
+}
+
+static inline int swap(uint64_t b) {
+    return __builtin_bswap64(b);
+}
+
 // attacked.c
 extern bool IsAttacked(struct Board * b, int side, int square);
 extern bool IsIllegal(struct Board * b);
@@ -68,7 +76,8 @@ extern int GenerateQuiets(struct Board * b, struct Move * m, int movecount);
 extern int GenerateCaptures(struct Board * b, struct Move * m, int movecount);
 
 // movesort.c
-extern void InitSort(struct Board * b, struct Sort * s);
+extern void InitSort(struct Board * b, struct Sort * s, struct Move ttm);
+extern void InitSortQuies(struct Board * b, struct Sort * s);
 extern int NextMove(struct Sort * s, struct Move * m);
 extern int MoveValue(struct Board * b, struct Move m);
 
@@ -82,5 +91,9 @@ extern uint64_t Divide(struct Board * b, int depth);
 
 // search.c
 extern int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV * pv);
+
+// zobrist.c
+extern void InitZobrist();
+extern void CalculateHash(struct Board * b);
 
 #endif

@@ -74,12 +74,15 @@ int first, cuts;
 
 int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV * pv)
 {
-    struct Move m;
+    struct Move m, bestmove;
     struct Sort s;
     struct Undo u;
     struct PV childpv;
+    int pvnode = (alpha == beta-1);
 
     int val, moves = 0;
+
+    int flag = hashfALPHA;
 
     nodes++;
 
@@ -88,7 +91,20 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
         return Quies(b, alpha, beta);
     }
 
-    InitSort(b, &s);
+    m.from = m.dest = 0;
+    bestmove.from = bestmove.dest = 0;
+
+    // Hash probe
+    CalculateHash(b);
+
+    if ((val = ReadTT(b, &m, depth, alpha, beta, ply)) != 11000) {
+        if (!pvnode) {
+            pv->count = 0;
+            return val;
+        }
+    }
+
+    InitSort(b, &s, m);
 
     while (NextMove(&s, &m)) {
         MakeMove(b, &u, m);
@@ -111,6 +127,8 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
 
             UpdateHistory(&s, depth);
 
+            WriteTT(b, depth, val, hashfBETA, m, ply);
+
             return beta;
         }
 
@@ -120,6 +138,9 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
             pv->moves[0] = m;
             memcpy(pv->moves + 1, childpv.moves, childpv.count * sizeof(struct Move));
             pv->count = childpv.count + 1;
+
+            bestmove = m;
+            flag = hashfEXACT;
         }
     }
 
@@ -130,6 +151,8 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
             return 0;
         }
     }
+
+    WriteTT(b, depth, alpha, flag, bestmove, ply);
 
     return alpha;
 }

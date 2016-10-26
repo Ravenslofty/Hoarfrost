@@ -49,6 +49,8 @@ void ClearBoard(struct Board * b)
     b->castle = 0;
 
     b->fifty = 0;
+
+    b->hash = 0;
 }
 
 // Convert a Forsyth-Edwards Notation position into our internal representation.
@@ -235,5 +237,8 @@ void ParseFEN(struct Board * b, char * fen)
 
     // Next would be the fullmove counter, except we really don't care about it in the
     // least. So we just return.
+
+    CalculateHash(b);
+
     return;
 }

@@ -40,7 +40,9 @@ uint64_t Perft(struct Board * b, int depth)
         return 1;
     }
 
-    InitSort(b, &s);
+    struct Move tmpmove;
+    tmpmove.from = tmpmove.dest = 0;
+    InitSort(b, &s, tmpmove);
 
     while (NextMove(&s, &m)) {
 
@@ -72,7 +74,9 @@ uint64_t Divide(struct Board * b, int depth)
         return 1;
     }
 
-    InitSort(b, &s);
+    struct Move tmpmove;
+    tmpmove.from = tmpmove.dest = 0;
+    InitSort(b, &s, tmpmove);
 
     while (NextMove(&s, &m)) {
 

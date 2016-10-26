@@ -27,29 +27,31 @@
 #include "board.h"
 #include "functions.h"
 
-int Eval(struct Board * b)
+void EvalMaterial(struct Board * b, int * midgame, int * endgame)
 {
-    int value;
+    int material = 0;
 
-    value = 0;
+    material += cnt(b->pieces[PAWN] & b->colors[WHITE]) * piecevals[PAWN];
+    material -= cnt(b->pieces[PAWN] & b->colors[BLACK]) * piecevals[PAWN];
 
-    // Material
-    value += __builtin_popcountll(b->pieces[PAWN] & b->colors[WHITE]) * piecevals[PAWN];
-    value -= __builtin_popcountll(b->pieces[PAWN] & b->colors[BLACK]) * piecevals[PAWN];
+    material += cnt(b->pieces[KNIGHT] & b->colors[WHITE]) * piecevals[KNIGHT];
+    material -= cnt(b->pieces[KNIGHT] & b->colors[BLACK]) * piecevals[KNIGHT];
 
-    value += __builtin_popcountll(b->pieces[KNIGHT] & b->colors[WHITE]) * piecevals[KNIGHT];
-    value -= __builtin_popcountll(b->pieces[KNIGHT] & b->colors[BLACK]) * piecevals[KNIGHT];
+    material += cnt(b->pieces[BISHOP] & b->colors[WHITE]) * piecevals[BISHOP];
+    material -= cnt(b->pieces[BISHOP] & b->colors[BLACK]) * piecevals[BISHOP];
 
-    value += __builtin_popcountll(b->pieces[BISHOP] & b->colors[WHITE]) * piecevals[BISHOP];
-    value -= __builtin_popcountll(b->pieces[BISHOP] & b->colors[BLACK]) * piecevals[BISHOP];
+    material += cnt(b->pieces[ROOK] & b->colors[WHITE]) * piecevals[ROOK];
+    material -= cnt(b->pieces[ROOK] & b->colors[BLACK]) * piecevals[ROOK];
 
-    value += __builtin_popcountll(b->pieces[ROOK] & b->colors[WHITE]) * piecevals[ROOK];
-    value -= __builtin_popcountll(b->pieces[ROOK] & b->colors[BLACK]) * piecevals[ROOK];
+    material += cnt(b->pieces[QUEEN] & b->colors[WHITE]) * piecevals[QUEEN];
+    material -= cnt(b->pieces[QUEEN] & b->colors[BLACK]) * piecevals[QUEEN];
 
-    value += __builtin_popcountll(b->pieces[QUEEN] & b->colors[WHITE]) * piecevals[QUEEN];
-    value -= __builtin_popcountll(b->pieces[QUEEN] & b->colors[BLACK]) * piecevals[QUEEN];
+    *midgame += material;
+    *endgame += material;
+}
 
-    // PST
+void EvalPST(struct Board * b, int * midgame, int * endgame)
+{
     uint64_t piecebb;
     int piece;
 
@@ -57,7 +59,8 @@ int Eval(struct Board * b)
         piecebb = b->pieces[piece] & b->colors[WHITE];
 
         while (piecebb) {
-            value += pst[piece][lsb(piecebb)^56];
+            *midgame += pst[piece][0][lsb(piecebb)];
+            *endgame += pst[piece][1][lsb(piecebb)];
 
             piecebb &= piecebb - 1;
         }
@@ -65,11 +68,41 @@ int Eval(struct Board * b)
         piecebb = b->pieces[piece] & b->colors[BLACK];
 
         while (piecebb) {
-            value -= pst[piece][lsb(piecebb)];
+            *midgame -= pst[piece][0][lsb(piecebb)^56];
+            *endgame -= pst[piece][1][lsb(piecebb)^56];
 
             piecebb &= piecebb - 1;
         }
     }
+}
+
+int Eval(struct Board * b)
+{
+    int midgame, endgame, phase, value;
+
+    midgame = 0;
+    endgame = 0;
+
+    // Material
+    // TODO: incremental update.
+    EvalMaterial(b, &midgame, &endgame);
+
+    // PST
+    // TODO: incremental update.
+    EvalPST(b, &midgame, &endgame);
+
+    // Phase
+    // Can be incremental updated?
+    phase = 24;
+
+    phase -= cnt(b->pieces[KNIGHT]);
+    phase -= cnt(b->pieces[BISHOP]);
+    phase -= cnt(b->pieces[ROOK]) << 1;
+    phase -= cnt(b->pieces[QUEEN]) << 2;
+
+    phase = (phase * 256 + 12) / 24;
+
+    value = ((midgame * (256 - phase)) + (endgame * phase)) / 256;
 
     // Side to move
     if (b->side == BLACK)

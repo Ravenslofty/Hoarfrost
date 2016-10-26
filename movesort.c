@@ -73,10 +73,21 @@ static inline int CompareMoves(const void * p1, const void * p2)
     if (((struct Move*)p1)->score <  ((struct Move *)p2)->score) return +1;
 }
 
-void InitSort(struct Board * b, struct Sort * s)
+void InitSort(struct Board * b, struct Sort * s, struct Move ttm)
 {
     s->movecount = GenerateCaptures(b, s->m, 0);
     s->movecount = GenerateQuiets(b, s->m, s->movecount);
+
+    if (ttm.from != ttm.dest) {
+        for (s->i = 0; s->i < s->movecount; s->i++) {
+            if (s->m[s->i].from == ttm.from &&
+                s->m[s->i].dest == ttm.dest &&
+                s->m[s->i].type == ttm.type) {
+                s->m[s->i].score = 4000;
+                break;
+            }
+        }
+    }
 
     qsort(s->m, s->movecount, sizeof(struct Move), CompareMoves);
 
@@ -133,8 +144,12 @@ int MoveValue(struct Board * b, struct Move m)
         // Put captures at front of move list.
         value += 2000;
     } else {
-        // History Heuristic for quiet moves.
-        value = history[from][dest] / (butterfly[from][dest]+1);
+        // PST difference for quiet moves.
+        if (b->side == WHITE) {
+            value = pst[piece][0][dest] - pst[piece][0][from];
+        } else {
+            value = pst[piece][0][dest^56] - pst[piece][0][from^56];
+        }
     }
 
     return value;

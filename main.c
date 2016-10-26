@@ -53,6 +53,7 @@ int ReadClock()
 int main()
 {
     InitMagics();
+    InitZobrist();
 
     struct Board b;
     struct Undo u;
@@ -81,7 +82,7 @@ int main()
 
             start = ReadClock();
 
-            for (depth = 1; depth <= 8; depth++) {
+            for (depth = 1; depth <= 6; depth++) {
 
                 int score = Search(&b, depth, -10000, +10000, 1, &pv);
 
@@ -203,7 +204,7 @@ int main()
             struct Sort s;
             int found = 0;
 
-            InitSort(&b, &s);
+            InitSort(&b, &s, tmp);
 
             while (NextMove(&s, &m)) {
 
