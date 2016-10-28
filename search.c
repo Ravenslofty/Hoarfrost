@@ -78,7 +78,9 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
     struct Sort s;
     struct Undo u;
     struct PV childpv;
-    int pvnode = (alpha == beta-1);
+    int pvnode = (alpha != beta-1);
+    int incheck = IsInCheck(b);
+    int eval = Eval(b);
 
     int val, moves = 0;
 
@@ -86,13 +88,31 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
 
     nodes++;
 
-    if (depth == 0) {
+    if (depth <= 0) {
         pv->count = 0;
         return Quies(b, alpha, beta);
     }
 
     m.from = m.dest = 0;
     bestmove.from = bestmove.dest = 0;
+
+    // Nullmove pruning
+    if (depth >= 2 && !pvnode && !incheck &&
+        cnt(b->colors[WHITE] & ~b->pieces[PAWN]) > 3 &&
+        eval >= beta) {
+
+        b->side ^= 1;
+        u.ep = b->ep;
+        b->ep = INVALID;
+
+        val = -Search(b, depth - 4, -beta, -beta+1, ply + 1, &childpv);
+
+        b->side ^= 1;
+        b->ep = u.ep;
+
+        if (val >= beta)
+            return beta;
+    }
 
     // Hash probe
     CalculateHash(b);
