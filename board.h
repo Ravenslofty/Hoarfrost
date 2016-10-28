@@ -97,7 +97,7 @@ static const uint64_t Rank7Mask = 0x00FF000000000000ULL;
 static const uint64_t Rank8Mask = 0xFF00000000000000ULL;
 
 // From Adam Hair's PSTs.
-static const int piecevals[6] = { 100, 300, 300, 500, 950, 20000 };
+static const int piecevals[7] = { 100, 300, 300, 500, 950, 20000, 0 };
 static const int pst[6][2][64] = {
     { // Pawns
         { // Middlegame

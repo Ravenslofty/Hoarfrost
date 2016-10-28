@@ -50,6 +50,9 @@ int ReadClock()
 #endif
 }
 
+#define GAMELENGTH 25
+int starttime, timelimit;
+
 int main()
 {
     InitMagics();
@@ -61,10 +64,9 @@ int main()
     char str[400];
     int i, n;
     int side = FORCE;
+    int timeleft = 300000, movestogo = 0, inc = 8000;
 
     ParseFEN(&b, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-
-    ClearHistory();
 
     setvbuf(stdout, NULL, _IONBF, 0);
 
@@ -72,23 +74,28 @@ int main()
 
         if (b.side == side) {
             struct PV pv;
-            int start, finish, depth;
+            int finish, depth;
 
             nodes = 0;
             cuts = 0;
             finish = 0;
 
-            ClearHistory();
+            starttime = ReadClock();
 
-            start = ReadClock();
+            if (!movestogo)
+                timelimit = (timeleft / GAMELENGTH) + inc;
+            else
+                timelimit = (timeleft / movestogo) + inc;
 
-            for (depth = 1; depth <= 6; depth++) {
+            printf("# allocating %d msec\n", timelimit);
+
+            for (depth = 1; depth <= 10; depth++) {
 
                 int score = Search(&b, depth, -10000, +10000, 1, &pv);
 
                 finish = ReadClock();
 
-                printf("%d %d %d %d ", depth, score, (finish-start)/10, nodes);
+                printf("%d %d %d %d ", depth, score, (finish-starttime)/10, nodes);
 
                 for (i = 0; i < pv.count; i++) {
                     PrintMove(&b, pv.moves[i]);
@@ -96,6 +103,9 @@ int main()
                 }
 
                 printf("\n");
+
+                if (finish - starttime >= timelimit)
+                    break;
             }
 
             printf("# First: %d Cuts: %d\n", first, cuts);
@@ -111,6 +121,9 @@ int main()
             }
 
             MakeMove(&b, &u, pv.moves[0]);
+
+            if (movestogo)
+                movestogo--;
         }
 
         if (fgets(str, 400, stdin) == NULL) {
@@ -145,17 +158,6 @@ int main()
 
         if (!strncmp(str, "new", 3)) {
             ParseFEN(&b, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-            ClearHistory();
-            continue;
-        }
-
-        if (!strncmp(str, "kiwipete", 8)) {
-            ParseFEN(&b, "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
-            continue;
-        }
-
-        if (!strncmp(str, "pos4", 4)) {
-            ParseFEN(&b, "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
             continue;
         }
 
@@ -210,11 +212,15 @@ int main()
 
                 printf("# ");
                 PrintMove(&b, m);
-                printf("\n");
+                printf(" %d \n", m.score);
 
                 if ((m.from&63) == tmp.from && (m.dest&63) == tmp.dest) {
                     MakeMove(&b, &u, m);
                     found = 1;
+
+                    if (movestogo)
+                        movestogo--;
+
                     break;
                 }
             }
@@ -223,6 +229,27 @@ int main()
                 printf("Illegal move\n");
 
 			continue;
+        }
+
+        if (!strncmp(str, "time", 4)) {
+            sscanf(str, "time %d", &timeleft);
+
+            // Time is in 100ths of a second, convert it to 1000ths of a second.
+            timeleft *= 10;
+
+            continue;
+        }
+
+        if (!strncmp(str, "level", 5)) {
+            int min, sec = 0;
+            float fractinc;
+            if (sscanf(str, "level %d %d %f", &movestogo, &min, &fractinc) != 3) {
+                sscanf(str, "level %d %d:%d %f", &movestogo, &min, &sec, &fractinc);
+            }
+
+            inc = fractinc * 1000.0;
+
+            continue;
         }
 
         if (!strncmp(str, "debug", 5)) {

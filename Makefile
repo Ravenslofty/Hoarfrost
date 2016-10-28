@@ -1,21 +1,33 @@
 CC=gcc
-CFLAGS=-std=c99 -march=native -mtune=native -c -Wall -Wno-format -Wno-char-subscripts -pipe -O3 -flto -DNDEBUG
+CFLAGS=-std=c99 -c -Wall -Wno-format -Wno-char-subscripts -pipe
+OPTFLAGS=-march=native -mtune=native -O3 -flto -DNDEBUG
+DBGFLAGS=-g -O0
 LDFLAGS=-flto
-SOURCES=attacked.c eval.c fen.c magic.c main.c makemove.c movegen.c movesort.c perft.c search.c
+SOURCES=attacked.c eval.c fen.c magic.c main.c makemove.c movegen.c movesort.c perft.c search.c see.c tt.c zobrist.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=dorpsgek
 
-.PHONY: all clean test
+ifeq ($(DEBUG), 1)
+	CFLAGS += $(DBGFLAGS)
+	EXECUTABLE = dorpsgek-debug
+else
+	CFLAGS += $(OPTFLAGS)
+endif
+
+.PHONY: all clean winclean test
 
 all: $(SOURCES) $(EXECUTABLE)
 
 clean:
 	rm -rf $(EXECUTABLE) $(OBJECTS)
 
+winclean:
+	del $(EXECUTABLE) $(OBJECTS)
+
 test: $(EXECUTABLE)
 	cat ./perft-$(TEST).epd | ./dorpsgek
 
-$(EXECUTABLE): $(OBJECTS) 
+$(EXECUTABLE): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
 .c.o:

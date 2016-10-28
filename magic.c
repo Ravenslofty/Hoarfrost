@@ -115,31 +115,38 @@ static const uint64_t * RookOffset[64] = {
 
 uint64_t PawnAttacks(const int side, const int sq)
 {
+    assert(sq >= 0 && sq <= 63);
+    assert(side == WHITE || side == BLACK);
     return PawnMask[side][sq];
 }
 
 uint64_t KnightAttacks(const int sq)
 {
+    assert(sq >= 0 && sq <= 63);
     return KnightMask[sq];
 }
 
 uint64_t BishopAttacks(const int sq, const uint64_t occ)
 {
+    assert(sq >= 0 && sq <= 63);
     return *(BishopOffset[sq] + (((occ & BishopMask[sq]) * BishopMagic[sq]) >> 55));
 }
 
 uint64_t RookAttacks(const int sq, const uint64_t occ)
 {
+    assert(sq >= 0 && sq <= 63);
     return *(RookOffset[sq] + (((occ & RookMask[sq]) * RookMagic[sq]) >> 52));
 }
 
 uint64_t QueenAttacks(const int sq, const uint64_t occ)
 {
+    assert(sq >= 0 && sq <= 63);
     return RookAttacks(sq, occ) | BishopAttacks(sq, occ);
 }
 
 uint64_t KingAttacks(const int sq)
 {
+    assert(sq >= 0 && sq <= 63);
     return KingMask[sq];
 }
 
@@ -290,7 +297,7 @@ void InitMagics()
         KnightMask[sq] |= (from>>6)  & ~(FileAMask|FileBMask); // Left 2 up 1
         KnightMask[sq] |= (from<<10) & ~(FileAMask|FileBMask); // Left 2 down 1
     }
-    
+
     // Bishops
     for (sq = 0; sq < 64; sq++) {
         b = 0;
@@ -312,7 +319,7 @@ void InitMagics()
             *index = CalcRookAttacks(sq, b);
         } while ((b = SNOOB(RookMask[sq], b)));
     }
-    
+
     // Kings
     for(sq = 0; sq < 64; ++sq)
     {

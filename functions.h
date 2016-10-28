@@ -92,6 +92,9 @@ extern uint64_t Divide(struct Board * b, int depth);
 // search.c
 extern int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV * pv);
 
+// see.c
+extern int SEE(struct Board * b, int from, int to, int cap, int att);
+
 // zobrist.c
 extern void InitZobrist();
 extern void CalculateHash(struct Board * b);

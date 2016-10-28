@@ -116,7 +116,14 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
 
         moves++;
 
-        val = -Search(b, depth - 1, -beta, -alpha, ply + 1, &childpv);
+        if (flag == hashfALPHA)
+            val = -Search(b, depth - 1, -beta, -alpha, ply + 1, &childpv);
+        else {
+            val = -Search(b, depth - 1, -alpha-1, -alpha, ply + 1, &childpv);
+            if (val > alpha && val < beta) {
+                val = -Search(b, depth - 1, -beta, -alpha, ply + 1, &childpv);
+            }
+        }
 
         UnmakeMove(b, &u, m);
 
@@ -124,8 +131,6 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
             if (moves == 1)
                 first++;
             cuts++;
-
-            UpdateHistory(&s, depth);
 
             WriteTT(b, depth, val, hashfBETA, m, ply);
 
