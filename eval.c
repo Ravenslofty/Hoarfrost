@@ -214,57 +214,6 @@ void EvalPST(struct Board * b, int * midgame, int * endgame)
     }
 }
 
-void EvalMobility(struct Board * b, int * midgame, int * endgame)
-{
-    uint64_t piecebb, attacks, occ;
-    int both = 0, sq;
-
-    piecebb = b->colors[WHITE] & b->pieces[KNIGHT];
-
-    while (piecebb) {
-        sq = lsb(piecebb);
-
-        both += cnt(KnightAttacks(sq)) * 4;
-
-        piecebb &= piecebb - 1;
-    }
-
-    piecebb = b->colors[BLACK] & b->pieces[KNIGHT];
-
-    while (piecebb) {
-        sq = lsb(piecebb);
-
-        both -= cnt(KnightAttacks(sq)) * 4;
-
-        piecebb &= piecebb - 1;
-    }
-
-    occ = b->colors[WHITE] | b->colors[BLACK];
-
-    piecebb = b->colors[WHITE] & b->pieces[BISHOP];
-
-    while (piecebb) {
-        sq = lsb(piecebb);
-
-        both += cnt(BishopAttacks(sq, occ)) * 4;
-
-        piecebb &= piecebb - 1;
-    }
-
-    piecebb = b->colors[BLACK] & b->pieces[BISHOP];
-
-    while (piecebb) {
-        sq = lsb(piecebb);
-
-        both -= cnt(BishopAttacks(sq, occ)) * 4;
-
-        piecebb &= piecebb - 1;
-    }
-
-    *midgame += both;
-    *endgame += both;
-}
-
 int Eval(struct Board * b)
 {
     int midgame, endgame, phase, value;
@@ -279,9 +228,6 @@ int Eval(struct Board * b)
     // PST
     // TODO: incremental update.
     EvalPST(b, &midgame, &endgame);
-
-    // Mobility
-    EvalMobility(b, &midgame, &endgame);
 
     // Tempo
     if (b->side == WHITE) {
