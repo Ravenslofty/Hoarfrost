@@ -27,8 +27,6 @@
 #include "board.h"
 #include "functions.h"
 
-int bias = 256;
-
 int piecevals[7] = { 100, 300, 300, 500, 950, 20000, 0 };
 int pst[6][2][64] = {
     { // Pawns

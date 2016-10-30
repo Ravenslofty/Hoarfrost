@@ -108,7 +108,7 @@ int MoveValue(struct Board * b, struct Move m)
 
     // The idea of sectioning the move sort scores comes from Rookie 2.
     // Thank you, Marcel van Kervinck!
-    value |= SEE(b, from, dest, cap, piece) << 6;
+    value += SEE(b, from, dest, cap, piece) << 6;
 
     return value;
 }
