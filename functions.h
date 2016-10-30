@@ -46,6 +46,16 @@ static inline int swap(uint64_t b) {
     return __builtin_bswap64(b);
 }
 
+static inline int max(int a, int b)
+{
+    return (a > b) ? a : b;
+}
+
+static inline int min(int a, int b)
+{
+    return (a < b) ? a : b;
+}
+
 // attacked.c
 extern bool IsAttacked(struct Board * b, int side, int square);
 extern bool IsIllegal(struct Board * b);
@@ -57,6 +67,9 @@ extern int Eval(struct Board * b);
 // fen.c
 extern void ClearBoard(struct Board * b);
 extern void ParseFEN(struct Board * b, char * fen);
+
+// main.c
+extern int ReadClock();
 
 // makemove.c
 extern void MakeMove(struct Board * b, struct Undo * u, struct Move m);
@@ -90,6 +103,7 @@ extern uint64_t Perft(struct Board * b, int depth);
 extern uint64_t Divide(struct Board * b, int depth);
 
 // search.c
+extern int Quies(struct Board * b, int alpha, int beta);
 extern int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV * pv);
 
 // see.c

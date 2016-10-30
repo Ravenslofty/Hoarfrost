@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -50,8 +51,8 @@ int ReadClock()
 #endif
 }
 
-#define GAMELENGTH 25
-int starttime, timelimit;
+#define GAMELENGTH 40
+int starttime, timelimit, hardtimelimit;
 
 int main()
 {
@@ -64,7 +65,9 @@ int main()
     char str[400];
     int i, n;
     int side = FORCE;
-    int timeleft = 300000, movestogo = 0, inc = 8000;
+    int timeleft = 3000, movestogo = 0, inc = 80;
+    double K = 0.5, sum_e = 0.0;
+    int sum_tests = 0;
 
     ParseFEN(&b, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
@@ -75,6 +78,7 @@ int main()
         if (b.side == side) {
             struct PV pv;
             int finish, depth;
+            int qscore, score;
 
             nodes = 0;
             cuts = 0;
@@ -82,16 +86,24 @@ int main()
 
             starttime = ReadClock();
 
+            qscore = Quies(&b, -10000, +10000);
+
             if (!movestogo)
                 timelimit = (timeleft / GAMELENGTH) + inc;
             else
                 timelimit = (timeleft / movestogo) + inc;
 
-            printf("# allocating %d msec\n", timelimit);
+            timelimit -= 20; // safety buffer
 
-            for (depth = 1; depth <= 10; depth++) {
+            hardtimelimit = min(3*timelimit, timeleft-20);
 
-                int score = Search(&b, depth, -10000, +10000, 1, &pv);
+            stopsearch = 0;
+
+            printf("# allocating %d msec, hard limit of %d\n", timelimit, hardtimelimit);
+
+            for (depth = 1; depth <= 20; depth++) {
+
+                score = Search(&b, depth, -10000, +10000, 1, &pv);
 
                 finish = ReadClock();
 
@@ -109,6 +121,7 @@ int main()
             }
 
             printf("# First: %d Cuts: %d\n", first, cuts);
+            printf("# QS: %d AB: %d Diff: %d\n", qscore, score, qscore-score);
 
             if (pv.count) {
                 printf("move ");
@@ -127,11 +140,11 @@ int main()
         }
 
         if (fgets(str, 400, stdin) == NULL) {
-            return 0;
+            break;
         }
 
         if (!strncmp(str, "protover 2", 8)) {
-            printf("feature done=0 myname=\"Dorpsgek Corkscrew\" setboard=1 usermove=1 done=1\n");
+            printf("feature done=0 myname=\"Dorpsgek Corkscrew\" setboard=1 usermove=1 restart=1 done=1\n");
             continue;
         }
 
@@ -277,7 +290,30 @@ int main()
         if (!strncmp(str, "quit", 4)) {
             break;
         }
+
+        if (!strncmp(str, "error", 5)) {
+            double Ri, e, sigmoid;
+            sscanf(str, "error %lf", &Ri);
+            int qi = Quies(&b, -10000, +10000);
+
+            if (b.side == BLACK)
+                qi = -qi;
+
+            sigmoid = 1 / (1 + pow(10.0, -(K * qi)/400));
+            e = (Ri - sigmoid) * (Ri - sigmoid);
+            sum_e += e;
+            sum_tests++;
+            continue;
+        }
+
+        if (!strncmp(str, "k", 1)) {
+            sscanf(str, "k %lf", &K);
+            continue;
+        }
     }
+
+    if (sum_tests)
+        printf("%lf\n", sum_e / sum_tests);
 
     return 0;
 }

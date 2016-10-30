@@ -80,11 +80,6 @@ static uint64_t GetLeastValuablePiece(struct Board * b, uint64_t bb, int colour,
     return 0;
 }
 
-static int max(int a, int b)
-{
-    return (a > b) ? a : b;
-}
-
 int SEE(struct Board * b, int from, int to, int cap, int att)
 {
    assert(b != NULL);

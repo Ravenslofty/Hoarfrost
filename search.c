@@ -35,20 +35,21 @@ int Quies(struct Board * b, int alpha, int beta)
     struct Sort s;
     struct Undo u;
 
-    int val;
+    int val, best;
 
     nodes++;
 
-    val = Eval(b);
+    best = Eval(b);
 
-    if (val >= beta)
-        return beta;
-    if (val > alpha)
-        alpha = val;
+    if (best >= beta)
+        return val;
+    if (best > alpha)
+        alpha = best;
 
     InitSortQuies(b, &s);
 
     while (NextMove(&s, &m)) {
+
         MakeMove(b, &u, m);
 
         if (IsIllegal(b)) {
@@ -61,16 +62,20 @@ int Quies(struct Board * b, int alpha, int beta)
         UnmakeMove(b, &u, m);
 
         if (val >= beta)
-            return beta;
+            return val;
 
         if (val > alpha)
             alpha = val;
+
+        if (val > best)
+            best = val;
     }
 
-    return alpha;
+    return best;
 }
 
 int first, cuts;
+int stopsearch;
 
 int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV * pv)
 {
@@ -88,6 +93,11 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
 
     nodes++;
 
+    if (!(nodes & 1023) && ReadClock() >= (starttime + hardtimelimit)) {
+        stopsearch = 1;
+        return Eval(b);
+    }
+
     if (depth <= 0) {
         pv->count = 0;
         return Quies(b, alpha, beta);
@@ -95,24 +105,6 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
 
     m.from = m.dest = 0;
     bestmove.from = bestmove.dest = 0;
-
-    // Nullmove pruning
-    if (depth >= 2 && !pvnode && !incheck &&
-        cnt(b->colors[WHITE] & ~b->pieces[PAWN]) > 3 &&
-        eval >= beta) {
-
-        b->side ^= 1;
-        u.ep = b->ep;
-        b->ep = INVALID;
-
-        val = -Search(b, depth - 4, -beta, -beta+1, ply + 1, &childpv);
-
-        b->side ^= 1;
-        b->ep = u.ep;
-
-        if (val >= beta)
-            return beta;
-    }
 
     // Hash probe
     CalculateHash(b);
@@ -146,6 +138,10 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
         }
 
         UnmakeMove(b, &u, m);
+
+        if (stopsearch) {
+            return Eval(b);
+        }
 
         if (val >= beta) {
             if (moves == 1)

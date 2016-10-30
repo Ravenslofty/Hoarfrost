@@ -28,7 +28,7 @@ test: $(EXECUTABLE)
 	cat ./perft-$(TEST).epd | ./dorpsgek
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ -lm
 
 .c.o:
 	$(CC) $(CFLAGS) $< -o $@
