@@ -50,6 +50,9 @@ int Quies(struct Board * b, int alpha, int beta)
 
     while (NextMove(&s, &m)) {
 
+        if ((m.score >> 6) < 0)
+            continue;
+
         MakeMove(b, &u, m);
 
         if (IsIllegal(b)) {
@@ -119,6 +122,7 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
     InitSort(b, &s, m);
 
     while (NextMove(&s, &m)) {
+
         MakeMove(b, &u, m);
 
         if (IsIllegal(b)) {
