@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Dan Ravensloft <dan.ravensloft@gmail.com>
+ * Copyright (c) 2016 Dan Ravensloft <dan.ravensloft@gmail.cppom>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -56,26 +56,26 @@ static inline int min(int a, int b)
     return (a < b) ? a : b;
 }
 
-// attacked.c
+// attacked.cpp
 extern bool IsAttacked(struct Board * b, int side, int square);
 extern bool IsIllegal(struct Board * b);
 extern bool IsInCheck(struct Board * b);
 
-// eval.c
+// eval.cpp
 extern int Eval(struct Board * b);
 
-// fen.c
+// fen.cpp
 extern void ClearBoard(struct Board * b);
 extern void ParseFEN(struct Board * b, char * fen);
 
-// main.c
+// main.cpp
 extern int ReadClock();
 
-// makemove.c
+// makemove.cpp
 extern void MakeMove(struct Board * b, struct Undo * u, struct Move m);
 extern void UnmakeMove(struct Board * b, struct Undo * u, struct Move m);
 
-// magic.c
+// magic.cpp
 extern void InitMagics();
 extern uint64_t PawnAttacks(const int side, const int sq);
 extern uint64_t KnightAttacks(const int sq);
@@ -84,11 +84,11 @@ extern uint64_t RookAttacks(const int sq, const uint64_t occ);
 extern uint64_t QueenAttacks(const int sq, const uint64_t occ);
 extern uint64_t KingAttacks(const int sq);
 
-// movegen.c
+// movegen.cpp
 extern int GenerateQuiets(struct Board * b, struct Move * m, int movecount);
 extern int GenerateCaptures(struct Board * b, struct Move * m, int movecount);
 
-// movesort.c
+// movesort.cpp
 extern void InitSort(struct Board * b, struct Sort * s, struct Move ttm);
 extern void InitSortQuies(struct Board * b, struct Sort * s);
 extern int NextMove(struct Sort * s, struct Move * m);
@@ -98,18 +98,29 @@ extern void ClearHistory();
 extern void ReduceHistory();
 extern void UpdateHistory(struct Sort * s, int depth);
 
-// perft.c
+// perft.cpp
 extern uint64_t Perft(struct Board * b, int depth);
 extern uint64_t Divide(struct Board * b, int depth);
 
-// search.c
+// search.cpp
 extern int Quies(struct Board * b, int alpha, int beta);
 extern int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV * pv);
 
-// see.c
+// see.cpp
 extern int SEE(struct Board * b, int from, int to, int cap, int att);
 
-// zobrist.c
+// tt.cpp
+extern void ResizeTT(int megabytes);
+extern void ClearTT();
+extern int ReadTT(struct Board * b, struct Move * m, int depth, int alpha, int beta, int ply);
+extern void WriteTT(struct Board * b, int depth, int val, int hashf, struct Move m, int ply);
+
+// tune.cpp
+extern void LoadTests();
+extern void LoadEval();
+extern void OptimiseEval();
+
+// zobrist.cpp
 extern void InitZobrist();
 extern void CalculateHash(struct Board * b);
 

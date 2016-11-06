@@ -33,8 +33,8 @@ static uint64_t GetXRays(struct Board * b, uint64_t occ, int sq)
     assert(b != NULL);
     assert(sq >= 0 && sq <= 63);
 
-    uint64_t rooksqueens = (b->pieces[ROOK] | b->pieces[QUEEN]) & occ;
-    uint64_t bishsqueens = (b->pieces[BISHOP] | b->pieces[QUEEN]) & occ;
+    uint64_t rooksqueens = (b->rooks() | b->queens()) & occ;
+    uint64_t bishsqueens = (b->bishops() | b->queens()) & occ;
 
     rooksqueens &= RookAttacks(sq, occ);
     bishsqueens &= BishopAttacks(sq, occ);
@@ -50,19 +50,19 @@ static uint64_t AttacksTo(struct Board * b, int square, int side)
 
     uint64_t pawns, knights, bishopsqueens, rooksqueens, kings;
 
-    pawns = b->pieces[PAWN] & b->colors[side];
+    pawns = b->pawns() & b->colors[side];
     pawns &= PawnAttacks(!side, square);
 
-    knights = b->pieces[KNIGHT] & b->colors[side];
+    knights = b->knights() & b->colors[side];
     knights &= KnightAttacks(square);
 
-    kings = b->pieces[KING] & b->colors[side];
+    kings = b->kings() & b->colors[side];
     kings &= KingAttacks(square);
 
-    bishopsqueens = (b->pieces[BISHOP] | b->pieces[QUEEN]) & b->colors[side];
+    bishopsqueens = (b->bishops() | b->queens()) & b->colors[side];
     bishopsqueens &= BishopAttacks(square, (b->colors[WHITE] | b->colors[BLACK]));
 
-    rooksqueens = (b->pieces[ROOK] | b->pieces[QUEEN]) & b->colors[side];
+    rooksqueens = (b->rooks() | b->queens()) & b->colors[side];
     rooksqueens &= RookAttacks(square, (b->colors[WHITE] | b->colors[BLACK]));
 
     return pawns | knights | bishopsqueens | rooksqueens | kings;

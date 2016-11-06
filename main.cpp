@@ -22,10 +22,15 @@
  * SOFTWARE.
  */
 
+#include <float.h>
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+
+#include <fstream>
+#include <utility>
+#include <vector>
 
 #ifndef WINDOWS
 #include <sys/time.h>
@@ -58,6 +63,7 @@ int main()
 {
     InitMagics();
     InitZobrist();
+    LoadEval();
 
     struct Board b;
     struct Undo u;
@@ -66,10 +72,10 @@ int main()
     int i, n;
     int side = FORCE;
     int timeleft = 3000, movestogo = 0, inc = 80;
-    double K = 0.5, sum_e = 0.0;
-    int sum_tests = 0;
 
     ParseFEN(&b, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+
+    ResizeTT(16);
 
     setvbuf(stdout, NULL, _IONBF, 0);
 
@@ -291,29 +297,33 @@ int main()
             break;
         }
 
-        if (!strncmp(str, "error", 5)) {
-            double Ri, e, sigmoid;
-            sscanf(str, "error %lf", &Ri);
-            int qi = Quies(&b, -10000, +10000);
-
-            if (b.side == BLACK)
-                qi = -qi;
-
-            sigmoid = 1 / (1 + pow(10.0, -(K * qi)/400));
-            e = (Ri - sigmoid) * (Ri - sigmoid);
-            sum_e += e;
-            sum_tests++;
-            continue;
+        if (!strncmp(str, "autotune", 8)) {
+            LoadTests();
+            OptimiseEval();
         }
 
-        if (!strncmp(str, "k", 1)) {
-            sscanf(str, "k %lf", &K);
-            continue;
+        if (!strncmp(str, "psts", 4)) {
+            int piece, phase, rank, file;
+
+            for (piece = PAWN; piece <= KING; piece++) {
+                printf("\nPiece %d: Opening:\n", piece);
+                for (rank = 7; rank >= 0; rank--) {
+                    for (file = 0; file <= 7; file++) {
+                        printf("%3d, ", pstrank[piece][0][rank]+pstfile[piece][0][file]);
+                    }
+                    printf("\n");
+                }
+
+                printf("\nPiece %d: Endgame:\n", piece);
+                for (rank = 7; rank >= 0; rank--) {
+                    for (file = 0; file <= 7; file++) {
+                        printf("%3d, ", pstrank[piece][1][rank]+pstfile[piece][1][file]);
+                    }
+                    printf("\n");
+                }
+            }
         }
     }
-
-    if (sum_tests)
-        printf("%lf\n", sum_e / sum_tests);
 
     return 0;
 }

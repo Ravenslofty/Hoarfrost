@@ -27,7 +27,8 @@
 #include "board.h"
 #include "functions.h"
 
-int piecevals[7] = { 100, 300, 300, 500, 950, 20000, 0 };
+//int piecevals[7] = { 100, 300, 310, 500, 950, 20000, 0 };
+int piecevals[7] = { 105, 342, 347, 560, 1085, 20000, 0 };
 int pst[6][2][64] = {
     { // Pawns
         { // Middlegame
@@ -163,6 +164,9 @@ int pst[6][2][64] = {
     }
 };
 
+int pstrank[6][2][8];
+int pstfile[6][2][8];
+
 void EvalMaterial(struct Board * b, int * midgame, int * endgame)
 {
     int material = 0;
@@ -189,14 +193,18 @@ void EvalMaterial(struct Board * b, int * midgame, int * endgame)
 void EvalPST(struct Board * b, int * midgame, int * endgame)
 {
     uint64_t piecebb;
-    int piece;
+    int piece, sq;
 
     for (piece = PAWN; piece <= KING; piece++) {
         piecebb = b->pieces[piece] & b->colors[WHITE];
 
         while (piecebb) {
-            *midgame += pst[piece][0][lsb(piecebb)];
-            *endgame += pst[piece][1][lsb(piecebb)];
+            sq = lsb(piecebb);
+
+            *midgame += pstrank[piece][0][ROW(sq)];
+            *midgame += pstfile[piece][0][COL(sq)];
+            *endgame += pstrank[piece][1][ROW(sq)];
+            *endgame += pstfile[piece][1][COL(sq)];
 
             piecebb &= piecebb - 1;
         }
@@ -204,8 +212,12 @@ void EvalPST(struct Board * b, int * midgame, int * endgame)
         piecebb = b->pieces[piece] & b->colors[BLACK];
 
         while (piecebb) {
-            *midgame -= pst[piece][0][lsb(piecebb)^56];
-            *endgame -= pst[piece][1][lsb(piecebb)^56];
+            sq = lsb(piecebb) ^ 56;
+
+            *midgame -= pstrank[piece][0][ROW(sq)];
+            *midgame -= pstfile[piece][0][COL(sq)];
+            *endgame -= pstrank[piece][1][ROW(sq)];
+            *endgame -= pstfile[piece][1][COL(sq)];
 
             piecebb &= piecebb - 1;
         }

@@ -89,7 +89,7 @@ void CalculateHash(struct Board * b)
 
     hash ^= zobrist_castle[b->castle];
 
-    if (b->ep != INVALID && b->ep >= 0 && b->ep <= 63) {
+    if (b->ep != INVALID && b->ep <= 63) {
         hash ^= zobrist_ep[COL(b->ep)];
     }
 

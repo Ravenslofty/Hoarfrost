@@ -55,7 +55,7 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
 
     // Pawns
     if (b->side == WHITE) {
-        pawns = b->pieces[PAWN] & b->colors[WHITE];
+        pawns = b->pawns() & b->colors[WHITE];
 
         // Single push
         singles = (pawns << 8) & empty;
@@ -97,7 +97,7 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
             singles &= singles - 1;
         }
     } else {
-        pawns = b->pieces[PAWN] & b->colors[BLACK];
+        pawns = b->pawns() & b->colors[BLACK];
 
         // Single push
         singles = (pawns >> 8) & empty;
@@ -137,7 +137,7 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
     }
 
     // Knights
-    knights = b->pieces[KNIGHT] & b->colors[b->side];
+    knights = b->knights() & b->colors[b->side];
 
     while (knights) {
         from = lsb(knights);
@@ -156,7 +156,7 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
     }
 
     // Bishops
-    bishops = b->pieces[BISHOP] & b->colors[b->side];
+    bishops = b->bishops() & b->colors[b->side];
 
     while (bishops) {
         from = lsb(bishops);
@@ -175,7 +175,7 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
     }
 
     // Rooks
-    rooks = b->pieces[ROOK] & b->colors[b->side];
+    rooks = b->rooks() & b->colors[b->side];
 
     while (rooks) {
         from = lsb(rooks);
@@ -194,7 +194,7 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
     }
 
     // Queens
-    queens = b->pieces[QUEEN] & b->colors[b->side];
+    queens = b->queens() & b->colors[b->side];
 
     while (queens) {
         from = lsb(queens);
@@ -213,7 +213,7 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
     }
 
     // Kings
-    kings = b->pieces[KING] & b->colors[b->side];
+    kings = b->kings() & b->colors[b->side];
 
     while (kings) {
         from = lsb(kings);
@@ -267,7 +267,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
 
     // Pawns
     if (b->side == WHITE) {
-        pawns = b->pieces[PAWN] & b->colors[WHITE];
+        pawns = b->pawns() & b->colors[WHITE];
 
         // Left captures
         attacks = ((pawns & ~FileAMask) << 7) & b->colors[BLACK] & ~Rank8Mask;
@@ -332,7 +332,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
             }
         }
     } else {
-        pawns = b->pieces[PAWN] & b->colors[BLACK];
+        pawns = b->pawns() & b->colors[BLACK];
 
         // Left captures
         attacks = ((pawns & ~FileAMask) >> 9) & b->colors[WHITE] & ~Rank1Mask;
@@ -399,7 +399,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
     }
 
     // Knights
-    knights = b->pieces[KNIGHT] & b->colors[b->side];
+    knights = b->knights() & b->colors[b->side];
 
     while (knights) {
         from = lsb(knights);
@@ -418,7 +418,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
     }
 
     // Bishops
-    bishops = b->pieces[BISHOP] & b->colors[b->side];
+    bishops = b->bishops() & b->colors[b->side];
 
     while (bishops) {
         from = lsb(bishops);
@@ -437,7 +437,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
     }
 
     // Rooks
-    rooks = b->pieces[ROOK] & b->colors[b->side];
+    rooks = b->rooks() & b->colors[b->side];
 
     while (rooks) {
         from = lsb(rooks);
@@ -456,7 +456,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
     }
 
     // Queens
-    queens = b->pieces[QUEEN] & b->colors[b->side];
+    queens = b->queens() & b->colors[b->side];
 
     while (queens) {
         from = lsb(queens);
@@ -475,7 +475,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
     }
 
     // Kings
-    kings = b->pieces[KING] & b->colors[b->side];
+    kings = b->kings() & b->colors[b->side];
 
     while (kings) {
         from = lsb(kings);

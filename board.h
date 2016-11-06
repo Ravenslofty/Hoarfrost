@@ -36,6 +36,14 @@ struct Board {
     unsigned char ep;
     unsigned char fifty;
     uint64_t hash;
+
+    // Access functions.
+    uint64_t pawns() const;
+    uint64_t knights() const;
+    uint64_t bishops() const;
+    uint64_t rooks() const;
+    uint64_t queens() const;
+    uint64_t kings() const;
 };
 
 struct Move {
@@ -76,7 +84,7 @@ struct PV {
 enum { WHITE, BLACK, FORCE };
 enum { PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING, NO_PIECE };
 enum { QUIET, CASTLE, CAPTURE, ENPASSANT, PROMOTION, CAPTURE_PROMOTION, DOUBLE_PUSH };
-enum { CAPTURES, QUIETS };
+enum { TT, CAPTURES, QUIETS };
 
 static const uint64_t FileAMask = 0x0101010101010101ULL;
 static const uint64_t FileBMask = 0x0202020202020202ULL;
@@ -113,6 +121,9 @@ extern uint64_t zobrist_castle[16];
 extern uint64_t zobrist_ep[8];
 
 extern int starttime, timelimit, hardtimelimit;
+
+extern int pstrank[6][2][8];
+extern int pstfile[6][2][8];
 
 #define PRINT_MOVE(m) PrintMove(b, m)
 

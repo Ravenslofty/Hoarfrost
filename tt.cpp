@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <vector>
 
 #include "board.h"
 #include "functions.h"
@@ -36,22 +37,30 @@ struct TTE {
     uint8_t depth;
 };
 
-#define TT_SIZE 1024*1024
-#define TT_MASK (TT_SIZE)-1
-struct TTE tt[TT_SIZE];
+std::vector< TTE > tt;
+
+void ResizeTT(int megabytes)
+{
+    // Convert to bytes
+    size_t s = megabytes * 1024 * 1024;
+    s /= sizeof(TTE);
+
+    tt.resize(s);
+}
 
 void ClearTT()
 {
-    int i;
+    size_t s = tt.size();
 
-    memset(tt, 0, TT_SIZE * sizeof(struct TTE));
+    tt.clear();
+    tt.resize(s);
 }
 
 int ReadTT(struct Board * b, struct Move * m, int depth, int alpha, int beta, int ply)
 {
-    struct TTE * entry = &tt[b->hash & TT_MASK];
+    struct TTE entry = tt[b->hash & tt.size()-1];
 
-    int val = entry->val;
+    int val = entry.val;
 
     if (val >= 9500) {
         val = val - ply;
@@ -65,22 +74,22 @@ int ReadTT(struct Board * b, struct Move * m, int depth, int alpha, int beta, in
     m->type = 0;
     m->score = 0;
 
-    if (entry->hash == b->hash) {
+    if (entry.hash == b->hash) {
 
-        if (entry->depth >= depth) {
-            if (entry->flags == hashfEXACT) {
+        if (entry.depth >= depth) {
+            if (entry.flags == hashfEXACT) {
                 return val;
             }
-            if ((entry->flags == hashfALPHA) &&
+            if ((entry.flags == hashfALPHA) &&
                     (val <= alpha)) {
                 return val;
             }
-            if ((entry->flags == hashfBETA) &&
+            if ((entry.flags == hashfBETA) &&
                     (val >= beta)) {
                 return val;
             }
         }
-        *m = entry->m;
+        *m = entry.m;
         m->score = 0;
     }
 
@@ -89,7 +98,7 @@ int ReadTT(struct Board * b, struct Move * m, int depth, int alpha, int beta, in
 
 void WriteTT(struct Board * b, int depth, int val, int hashf, struct Move m, int ply)
 {
-    struct TTE * entry = &tt[b->hash & TT_MASK];
+    struct TTE entry;
 
     if (val >= 9500) {
         val = val + ply;
@@ -98,9 +107,11 @@ void WriteTT(struct Board * b, int depth, int val, int hashf, struct Move m, int
         val = val - ply;
     }
 
-    entry->hash = b->hash;
-    entry->m = m;
-    entry->val = val;
-    entry->flags = hashf;
-    entry->depth = depth;
+    entry.hash = b->hash;
+    entry.m = m;
+    entry.val = val;
+    entry.flags = hashf;
+    entry.depth = depth;
+
+    tt[b->hash & tt.size()-1] = entry;
 }
