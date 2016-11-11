@@ -1,6 +1,18 @@
+language: cpp
+
+# The Precise container system does not support C++11, so we have to use Trusty.
+sudo: required
+dist: trusty
+
+compiler:
+  - clang
+  - gcc
+
+# perft tests
+# maybe add eval symmetry tests?
 env:
   - TEST=cpw
   - TEST=hartmann
-language: c
+
 script: make
 after_success: make test
