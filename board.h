@@ -54,6 +54,12 @@ struct Move {
     unsigned char color:1;
     unsigned char piece:3;
     signed short  score:12;
+    constexpr Move():
+        from(0), dest(0), type(0), prom(0), color(0), piece(0), score(0)
+        {}
+    constexpr Move(char f, char d, char t, char p, char c, char i, short s):
+        from(f), dest(d), type(t), prom(p), color(c), piece(i), score(s)
+        {}
 };
 
 struct Undo {
@@ -131,7 +137,7 @@ extern int pstfile[6][2][8];
 #define    hashfALPHA   1
 #define    hashfBETA    2
 
-static inline void PrintMove(struct Board * b, struct Move m)
+static inline void PrintMove(struct Board *, struct Move m)
 {
     static const char promotechar[6] = {
         'p', 'n', 'b', 'r', 'q', 'k'

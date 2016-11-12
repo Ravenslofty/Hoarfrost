@@ -30,13 +30,7 @@
 
 static inline void AddMove(struct Board * b, struct Move * m, int * movecount, int from, int dest, int type, int prompiece, int color, int piece)
 {
-    struct Move n;
-    n.from = from;
-    n.dest = dest;
-    n.type = type;
-    n.prom = prompiece;
-    n.color = color;
-    n.piece = piece;
+    struct Move n(from, dest, type, prompiece, color, piece, 0);
     n.score = MoveValue(b, n);
 
     m[*movecount] = n;
