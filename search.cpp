@@ -42,7 +42,7 @@ int Quies(struct Board * b, int alpha, int beta)
     best = Eval(b);
 
     if (best >= beta)
-        return val;
+        return best;
     if (best > alpha)
         alpha = best;
 
