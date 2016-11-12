@@ -320,7 +320,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
         }
 
         // En passant
-        if (b->ep != INVALID && b->ep >= 0 && b->ep <= 63) {
+        if (b->ep != INVALID && b->ep <= 63) {
             attacks = PawnAttacks(BLACK, b->ep) & b->pieces[PAWN] & b->colors[WHITE];
 
             while (attacks) {
@@ -385,7 +385,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
         }
 
         // En passant
-        if (b->ep != INVALID && b->ep >= 0 && b->ep <= 63) {
+        if (b->ep != INVALID && b->ep <= 63) {
             attacks = PawnAttacks(WHITE, b->ep) & b->pieces[PAWN] & b->colors[BLACK];
 
             while (attacks) {

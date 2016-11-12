@@ -58,7 +58,7 @@ void ClearTT()
 
 int ReadTT(struct Board * b, struct Move * m, int depth, int alpha, int beta, int ply)
 {
-    struct TTE entry = tt[b->hash & tt.size()-1];
+    struct TTE entry = tt[b->hash & (tt.size()-1)];
 
     int val = entry.val;
 
@@ -113,5 +113,5 @@ void WriteTT(struct Board * b, int depth, int val, int hashf, struct Move m, int
     entry.flags = hashf;
     entry.depth = depth;
 
-    tt[b->hash & tt.size()-1] = entry;
+    tt[b->hash & (tt.size()-1)] = entry;
 }
