@@ -27,8 +27,7 @@
 #include "board.h"
 #include "functions.h"
 
-//int piecevals[7] = { 100, 300, 310, 500, 950, 20000, 0 };
-int piecevals[7] = { 105, 342, 347, 560, 1085, 20000, 0 };
+int piecevals[7][2] = { {105, 105}, {342, 342}, {347, 347}, {560, 560}, {1085, 1085}, {20000, 20000}, {0, 0} };
 int pst[6][2][64] = {
     { // Pawns
         { // Middlegame
@@ -171,23 +170,37 @@ void EvalMaterial(struct Board * b, int * midgame, int * endgame)
 {
     int material = 0;
 
-    material += cnt(b->pieces[PAWN] & b->colors[WHITE]) * piecevals[PAWN];
-    material -= cnt(b->pieces[PAWN] & b->colors[BLACK]) * piecevals[PAWN];
+    // Midgame
+    *midgame += cnt(b->pieces[PAWN] & b->colors[WHITE]) * piecevals[PAWN][0];
+    *midgame -= cnt(b->pieces[PAWN] & b->colors[BLACK]) * piecevals[PAWN][0];
 
-    material += cnt(b->pieces[KNIGHT] & b->colors[WHITE]) * piecevals[KNIGHT];
-    material -= cnt(b->pieces[KNIGHT] & b->colors[BLACK]) * piecevals[KNIGHT];
+    *midgame += cnt(b->pieces[KNIGHT] & b->colors[WHITE]) * piecevals[KNIGHT][0];
+    *midgame -= cnt(b->pieces[KNIGHT] & b->colors[BLACK]) * piecevals[KNIGHT][0];
 
-    material += cnt(b->pieces[BISHOP] & b->colors[WHITE]) * piecevals[BISHOP];
-    material -= cnt(b->pieces[BISHOP] & b->colors[BLACK]) * piecevals[BISHOP];
+    *midgame += cnt(b->pieces[BISHOP] & b->colors[WHITE]) * piecevals[BISHOP][0];
+    *midgame -= cnt(b->pieces[BISHOP] & b->colors[BLACK]) * piecevals[BISHOP][0];
 
-    material += cnt(b->pieces[ROOK] & b->colors[WHITE]) * piecevals[ROOK];
-    material -= cnt(b->pieces[ROOK] & b->colors[BLACK]) * piecevals[ROOK];
+    *midgame += cnt(b->pieces[ROOK] & b->colors[WHITE]) * piecevals[ROOK][0];
+    *midgame -= cnt(b->pieces[ROOK] & b->colors[BLACK]) * piecevals[ROOK][0];
 
-    material += cnt(b->pieces[QUEEN] & b->colors[WHITE]) * piecevals[QUEEN];
-    material -= cnt(b->pieces[QUEEN] & b->colors[BLACK]) * piecevals[QUEEN];
+    *midgame += cnt(b->pieces[QUEEN] & b->colors[WHITE]) * piecevals[QUEEN][0];
+    *midgame -= cnt(b->pieces[QUEEN] & b->colors[BLACK]) * piecevals[QUEEN][0];
 
-    *midgame += material;
-    *endgame += material;
+    // Endgame
+    *endgame += cnt(b->pieces[PAWN] & b->colors[WHITE]) * piecevals[PAWN][1];
+    *endgame -= cnt(b->pieces[PAWN] & b->colors[BLACK]) * piecevals[PAWN][1];
+
+    *endgame += cnt(b->pieces[KNIGHT] & b->colors[WHITE]) * piecevals[KNIGHT][1];
+    *endgame -= cnt(b->pieces[KNIGHT] & b->colors[BLACK]) * piecevals[KNIGHT][1];
+
+    *endgame += cnt(b->pieces[BISHOP] & b->colors[WHITE]) * piecevals[BISHOP][1];
+    *endgame -= cnt(b->pieces[BISHOP] & b->colors[BLACK]) * piecevals[BISHOP][1];
+
+    *endgame += cnt(b->pieces[ROOK] & b->colors[WHITE]) * piecevals[ROOK][1];
+    *endgame -= cnt(b->pieces[ROOK] & b->colors[BLACK]) * piecevals[ROOK][1];
+
+    *endgame += cnt(b->pieces[QUEEN] & b->colors[WHITE]) * piecevals[QUEEN][1];
+    *endgame -= cnt(b->pieces[QUEEN] & b->colors[BLACK]) * piecevals[QUEEN][1];
 }
 
 void EvalPST(struct Board * b, int * midgame, int * endgame)
