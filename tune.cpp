@@ -72,9 +72,9 @@ void LoadEval()
         f.getline(line, 128);
 
         if (!strncmp(line, "piece", 5)) {
-            int index, value;
-            sscanf(line, "piece %d %d", &index, &value);
-            piecevals[index] = value;
+            int index, phase, value;
+            sscanf(line, "piece %d %d %d", &index, &phase, &value);
+            piecevals[index][phase] = value;
             continue;
         }
 
@@ -118,14 +118,14 @@ double CalcError()
     return e;
 }
 
-void DumpEval()
+void DumpEval(const char * const filename)
 {
-    std::fstream f("vals.txt", std::fstream::out);
+    std::fstream f(filename, std::fstream::out);
 
     for (int i = PAWN; i <= KING; i++) {
-        f << "piece " << i << " " << piecevals[i] << std::endl;
-
         for (int j = 0; j <= 1; j++) {
+            f << "piece " << i << " " << j << " " << piecevals[i][j] << std::endl;
+
             for (int k = 0; k <= 7; k++) {
                 f << "pstrank " << i << " " << j << " " << k << " " << pstrank[i][j][k] << std::endl;
                 f << "pstfile " << i << " " << j << " " << k << " " << pstfile[i][j][k] << std::endl;
@@ -134,67 +134,222 @@ void DumpEval()
     }
 }
 
-void OptimiseEval()
+void DumpEval()
 {
+    DumpEval("vals.txt");
+}
+
+void DumpZeroEval()
+{
+    DumpEval("vals-backup.txt");
+
+    std::fstream f("vals.txt", std::fstream::out);
+
+    for (int i = PAWN; i <= KING; i++) {
+        for (int j = 0; j <= 1; j++) {
+            f << "piece " << i << " " << j << " " << 0 << std::endl;
+
+            for (int k = 0; k <= 7; k++) {
+                f << "pstrank " << i << " " << j << " " << k << " " << 0 << std::endl;
+                f << "pstfile " << i << " " << j << " " << k << " " << 0 << std::endl;
+            }
+        }
+    }
+}
+
+void DumpRandomEval()
+{
+    DumpEval("vals-backup.txt");
+
+    std::fstream f("vals.txt", std::fstream::out);
     std::mt19937 mt;
-    std::uniform_int_distribution<int> uid(-10,+10);
+    std::uniform_int_distribution<int> uid(-1000,+1000);
     auto rng = std::bind(uid, mt);
 
+
+    for (int i = PAWN; i <= KING; i++) {
+        for (int j = 0; j <= 1; j++) {
+            f << "piece " << i << " " << j << " " << 0 << std::endl;
+
+            for (int k = 0; k <= 7; k++) {
+                f << "pstrank " << i << " " << j << " " << k << " " << 0 << std::endl;
+                f << "pstfile " << i << " " << j << " " << k << " " << 0 << std::endl;
+            }
+        }
+    }
+}
+
+void OptimiseEval()
+{
     LoadEval();
 
     double firsterr = CalcError();
     double besterr = firsterr;
+    double currerr;
 
-    for (int iteration = 0; iteration < 1000; iteration++) {
-        LoadEval(); // Get current best
+    int s = 100;
 
-        std::uniform_int_distribution<int> choice(0,2);
+    while (s >= 1) {
+        while (true) {
+            LoadEval(); // Get current best
 
-        int c = choice(mt);
+            int c, p, h, f, bestc = 0, bestp = 0, besth = 0, bests = 0, bestf = 0;
+            bool progress = false;
 
-        if (c == 0) {
-            std::uniform_int_distribution<int> victim(KNIGHT, QUEEN);
+            // Find best neighbour.
 
-            int p = victim(mt);
+            // Piece values, 2 * 5 * 2 = 20 rounds.
+            for (h = 0; h <= 1; h++) {
 
-            piecevals[p] += rng();
-        } else if (c == 1) {
-            std::uniform_int_distribution<int> piece(PAWN, KING);
-            std::uniform_int_distribution<int> phase(0, 1);
-            std::uniform_int_distribution<int> file(0, 7);
+                if (h == 0)
+                    printf("== Midgame ==\n");
+                else
+                    printf("== Endgame ==\n");
 
-            int p = piece(mt);
-            int h = phase(mt);
-            int f = file(mt);
+                for (p = PAWN; p < KING; p++) {
 
-            int s = rng();
+                    printf("== Piece Value ==\n");
 
-            printf("pstfile %d %d %d %+d\n", p, h, f, s);
+                    piecevals[p][h] += s;
 
-            pstfile[p][h][f] += s;
-        } else if (c == 2) {
-            std::uniform_int_distribution<int> piece(PAWN, KING);
-            std::uniform_int_distribution<int> phase(0, 1);
-            std::uniform_int_distribution<int> rank(0, 7);
+                    currerr = CalcError();
 
-            int p = piece(mt);
-            int h = phase(mt);
-            int r = rank(mt);
+                    if (currerr < besterr) {
+                        bestc = 0;
+                        bestp = p;
+                        besth = h;
+                        bests = s;
+                        besterr = currerr;
+                        progress = true;
 
-            int s = rng();
+                        printf("%.17g (%.17g)\n", besterr, firsterr-besterr);
+                    }
 
-            printf("pstrank %d %d %d %+d\n", p, h, r, s);
+                    piecevals[p][h] -= s + s;
 
-            pstrank[p][h][r] += s;
+                    currerr = CalcError();
+
+                    if (currerr < besterr) {
+                        bestc = 0;
+                        bestp = p;
+                        besth = h;
+                        bests = s;
+                        besterr = currerr;
+                        progress = true;
+
+                        printf("%.17g (%.17g)\n", besterr, firsterr-besterr);
+                    }
+
+                    piecevals[p][h] += s;
+
+                    printf("== PSTs ==\n");
+
+                    for (f = 0; f < 8; f++) {
+                        pstfile[p][h][f] += s;
+
+                        currerr = CalcError();
+
+                        if (currerr < besterr) {
+                            bestc = 1;
+                            bestp = p;
+                            besth = h;
+                            bests = s;
+                            bestf = f;
+                            besterr = currerr;
+                            progress = true;
+
+                            printf("%.17g (%.17g)\n", besterr, firsterr-besterr);
+                        }
+
+                        pstfile[p][h][f] -= s + s;
+
+                        currerr = CalcError();
+
+                        if (currerr < besterr) {
+                            bestc = 1;
+                            bestp = p;
+                            besth = h;
+                            bests = -s;
+                            bestf = f;
+                            besterr = currerr;
+                            progress = true;
+
+                            printf("%.17g (%.17g)\n", besterr, firsterr-besterr);
+                        }
+
+                        pstfile[p][h][f] += s;
+
+                        pstrank[p][h][f] += s;
+
+                        currerr = CalcError();
+
+                        if (currerr < besterr) {
+                            bestc = 2;
+                            bestp = p;
+                            besth = h;
+                            bests = s;
+                            bestf = f;
+                            besterr = currerr;
+                            progress = true;
+
+                            printf("%.17g (%.17g)\n", besterr, firsterr-besterr);
+                        }
+
+                        pstrank[p][h][f] -= s + s;
+
+                        currerr = CalcError();
+
+                        if (currerr < besterr) {
+                            bestc = 2;
+                            bestp = p;
+                            besth = h;
+                            bests = -s;
+                            bestf = f;
+                            besterr = currerr;
+                            progress = true;
+
+                            printf("%.17g (%.17g)\n", besterr, firsterr-besterr);
+                        }
+
+                        pstrank[p][h][f] += s;
+                    }
+                }
+            }
+
+            if (progress) {
+                if (bestc == 0) {
+                    printf("piece %d %d %+d\n", bestp, besth, bests);
+
+                    piecevals[bestp][besth] += bests;
+                }
+
+                if (bestc == 1) {
+                    printf("pstfile %d %d %d %+d\n", bestp, besth, bestf, bests);
+
+                    pstfile[bestp][besth][bestf] += bests;
+                }
+
+                if (bestc == 2) {
+                    printf("pstrank %d %d %d %+d\n", bestp, besth, bestf, bests);
+
+                    pstrank[bestp][besth][bestf] += bests;
+                }
+
+                DumpEval();
+            } else {
+                break;
+            }
         }
 
-        double newerr = CalcError();
+        char filename[16];
 
-        if (newerr < besterr) {
-            besterr = newerr;
+        printf("=== END OF ITERATION FOR S = %d ===\n", s);
 
-            DumpEval();
-        }
+        sprintf(filename, "vals-%d.txt", s);
+
+        DumpEval(filename);
+
+        s = s / 2;
     }
 
     printf("Reduced error by %.17g\n", firsterr - besterr);

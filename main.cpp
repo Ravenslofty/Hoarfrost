@@ -323,6 +323,16 @@ int main()
                 }
             }
         }
+
+        if (!strncmp(str, "randeval", 8)) {
+            DumpRandomEval();
+            continue;
+        }
+
+        if (!strncmp(str, "zeroeval", 8)) {
+            DumpZeroEval();
+            continue;
+        }
     }
 
     return 0;

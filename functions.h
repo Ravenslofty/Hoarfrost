@@ -120,6 +120,9 @@ extern void LoadTests();
 extern void LoadEval();
 extern void OptimiseEval();
 
+extern void DumpZeroEval();
+extern void DumpRandomEval();
+
 // zobrist.cpp
 extern void InitZobrist();
 extern void CalculateHash(struct Board * b);
