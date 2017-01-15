@@ -51,7 +51,7 @@ int Quies(struct Board * b, int alpha, int beta)
     while (NextMove(&s, &m)) {
 
         if ((m.score >> 6) < 0)
-            continue;
+            break;
 
         MakeMove(b, &u, m);
 
