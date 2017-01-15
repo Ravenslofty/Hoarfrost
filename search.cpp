@@ -120,13 +120,20 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
     }
 
     if (depth >= 2 && !incheck && eval >= beta && !pvnode && cnt(b->colors[b->side] & ~b->pawns()) > 3) {
-        Board c = *b;
 
-        c.side ^= 1;
-        c.fifty = 0;
-        c.ep = INVALID;
+        b->side ^= 1;
 
-        val = -Search(&c, depth - 4, -beta, -beta+1, ply+1, &childpv);
+        int fifty = b->fifty;
+        int ep = b->ep;
+
+        b->fifty = 0;
+        b->ep = INVALID;
+
+        val = -Search(b, depth - 4, -beta, -beta+1, ply+1, &childpv);
+
+        b->ep = ep;
+        b->fifty = fifty;
+        b->side ^= 1;
 
         if (val >= beta)
             return val;
