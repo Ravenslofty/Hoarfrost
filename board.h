@@ -90,7 +90,7 @@ static const uint64_t Rank8Mask = 0xFF00000000000000ULL;
 
 #define PRINT_MOVE(m) PrintMove(b, m)
 
-static inline void PrintMove(struct Board * b, struct Move m)
+static inline void PrintMove(struct Move m)
 {
     static const char promotechar[6] = {
         'p', 'n', 'b', 'r', 'q', 'k'

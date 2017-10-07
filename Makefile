@@ -1,6 +1,5 @@
 CC=gcc
-CFLAGS=-march=native -mtune=native -c -Wall -Wno-format -Wno-char-subscripts -pipe -O3 -flto -DNDEBUG
-LDFLAGS=-flto
+CFLAGS=-march=native -mtune=native -Wall -Wextra -Wno-format -Wno-char-subscripts -pipe -O3 -flto -DNDEBUG -g -fwhole-program
 SOURCES=attacked.c fen.c magic.c main.c makemove.c movegen.c movesort.c perft.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=dorpsgek
@@ -16,7 +15,7 @@ test: $(EXECUTABLE)
 	cat ./perft-$(TEST).epd | ./dorpsgek
 
 $(EXECUTABLE): $(OBJECTS) 
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+	$(CC) $(CFLAGS) $(OBJECTS) -o $@
 
 .c.o:
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) -c $(CFLAGS) $< -o $@

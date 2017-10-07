@@ -94,7 +94,6 @@ int GenerateQuiets(struct Board * b, struct Move * m, int movecount)
             AddMove(b, m, &movecount, dest - 8, dest, PROMOTION, BISHOP, WHITE, PAWN);
             AddMove(b, m, &movecount, dest - 8, dest, PROMOTION, KNIGHT, WHITE, PAWN);
 
-
             singles &= singles - 1;
         }
     } else {
@@ -261,11 +260,10 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
 {
     uint64_t pawns, knights, bishops, rooks, queens, kings;
     uint64_t attacks;
-    uint64_t occ, empty;
+    uint64_t occ;
     int from, dest;
 
     occ = b->colors[WHITE] | b->colors[BLACK];
-    empty = ~occ;
 
     // Pawns
     if (b->side == WHITE) {
@@ -322,7 +320,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
         }
 
         // En passant
-        if (b->ep != INVALID && b->ep >= 0 && b->ep <= 63) {
+        if (b->ep != INVALID && b->ep <= 63) {
             attacks = PawnAttacks(BLACK, b->ep) & b->pieces[PAWN] & b->colors[WHITE];
 
             while (attacks) {
@@ -387,7 +385,7 @@ int GenerateCaptures(struct Board * b, struct Move * m, int movecount)
         }
 
         // En passant
-        if (b->ep != INVALID && b->ep >= 0 && b->ep <= 63) {
+        if (b->ep != INVALID && b->ep <= 63) {
             attacks = PawnAttacks(WHITE, b->ep) & b->pieces[PAWN] & b->colors[BLACK];
 
             while (attacks) {

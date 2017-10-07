@@ -39,13 +39,13 @@ static inline int lsb(uint64_t b) {
 }
 
 // magic.c
-void InitMagics();
-uint64_t PawnAttacks(const int side, const int sq);
-uint64_t KnightAttacks(const int sq);
-uint64_t BishopAttacks(const int sq, const uint64_t occ);
-uint64_t RookAttacks(const int sq, const uint64_t occ);
-uint64_t QueenAttacks(const int sq, const uint64_t occ);
-uint64_t KingAttacks(const int sq);
+extern void InitMagics();
+extern uint64_t PawnAttacks(const int side, const int sq);
+extern uint64_t KnightAttacks(const int sq);
+extern uint64_t BishopAttacks(const int sq, const uint64_t occ);
+extern uint64_t RookAttacks(const int sq, const uint64_t occ);
+extern uint64_t QueenAttacks(const int sq, const uint64_t occ);
+extern uint64_t KingAttacks(const int sq);
 
 // attacked.c
 extern bool IsAttacked(struct Board * b, int side, int square);

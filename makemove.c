@@ -47,7 +47,6 @@ void MakeMove(struct Board * b, struct Undo * u, struct Move m)
     char dest = m.dest & 63;
     char type = m.type & 7;
     char prom = m.prom & 7;
-    char color = m.color & 1;
     char piece = m.piece & 7;
 
     frombb = 1ULL << from;
@@ -164,7 +163,6 @@ void UnmakeMove(struct Board * b, struct Undo * u, struct Move m)
     char dest = m.dest & 63;
     char type = m.type & 7;
     char prom = m.prom & 7;
-    char color = m.color & 1;
     char piece = m.piece & 7;
 
     frombb = 1ULL << from;

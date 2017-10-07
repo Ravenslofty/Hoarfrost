@@ -29,31 +29,29 @@
 
 uint64_t Perft(struct Board * b, int depth)
 {
-    struct Sort s;
-    struct Move m;
+    struct Move ml[256];
     struct Undo u;
-    struct Board c;
-    int movecount, i, j;
     uint64_t nodes = 0, tmp;
+    int i, movecount;
 
     if (depth == 0) {
         return 1;
     }
 
-    InitSort(b, &s);
+    movecount = GenerateCaptures(b, ml, 0);
+    movecount = GenerateQuiets(b, ml, movecount);
 
-    while (NextMove(&s, &m)) {
-
-        MakeMove(b, &u, m);
+    for (i = 0; i < movecount; i++) {
+        MakeMove(b, &u, ml[i]);
 
         if (IsIllegal(b)) {
-            UnmakeMove(b, &u, m);
+            UnmakeMove(b, &u, ml[i]);
             continue;
         }
 
         nodes += tmp = Perft(b, depth - 1);
 
-        UnmakeMove(b, &u, m);
+        UnmakeMove(b, &u, ml[i]);
     }
 
     return nodes;
@@ -61,33 +59,32 @@ uint64_t Perft(struct Board * b, int depth)
 
 uint64_t Divide(struct Board * b, int depth)
 {
-    struct Sort s;
-    struct Move m;
+    struct Move ml[256];
     struct Undo u;
-    struct Board c;
-    int movecount, i, j;
     uint64_t nodes = 0, tmp;
+    int i, movecount;
 
     if (depth == 0) {
         return 1;
     }
 
-    InitSort(b, &s);
+    movecount = GenerateCaptures(b, ml, 0);
+    movecount = GenerateQuiets(b, ml, movecount);
 
-    while (NextMove(&s, &m)) {
+    for (i = 0; i < movecount; i++) {
 
-        MakeMove(b, &u, m);
+        MakeMove(b, &u, ml[i]);
 
         if (IsIllegal(b)) {
-            UnmakeMove(b, &u, m);
+            UnmakeMove(b, &u, ml[i]);
             continue;
         }
 
-        PrintMove(b, m);
+        PrintMove(ml[i]);
 
         nodes += tmp = Perft(b, depth - 1);
 
-        UnmakeMove(b, &u, m);
+        UnmakeMove(b, &u, ml[i]);
 
         printf(" %llu\n", tmp);
     }

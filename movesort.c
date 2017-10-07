@@ -31,7 +31,7 @@ static inline int CompareMoves(const void * p1, const void * p2)
 {
     if (((struct Move*)p1)->score >  ((struct Move *)p2)->score) return -1;
     if (((struct Move*)p1)->score == ((struct Move *)p2)->score) return 0;
-    if (((struct Move*)p1)->score <  ((struct Move *)p2)->score) return +1;
+    return -1;
 }
 
 void InitSort(struct Board * b, struct Sort * s)

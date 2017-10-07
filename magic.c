@@ -314,8 +314,7 @@ void InitMagics()
     }
     
     // Kings
-    for(sq = 0; sq < 64; ++sq)
-    {
+    for (sq = 0; sq < 64; sq++) {
         uint64_t from = (uint64_t)1<<sq;
         KingMask[sq]  = (from>>8); // Up 1
         KingMask[sq] |= (from<<8); // Down 1
