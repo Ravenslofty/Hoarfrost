@@ -63,7 +63,6 @@ int main()
 {
     InitMagics();
     InitZobrist();
-    LoadEval();
 
     struct Board b;
     struct Undo u;
@@ -71,7 +70,7 @@ int main()
     char str[400];
     int i, n;
     int side = FORCE;
-    int timeleft = 3000, movestogo = 0, inc = 80;
+    int timeleft = 300000, movestogo = 0, inc = 8000;
 
     ParseFEN(&b, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
@@ -295,43 +294,6 @@ int main()
 
         if (!strncmp(str, "quit", 4)) {
             break;
-        }
-
-        if (!strncmp(str, "autotune", 8)) {
-            LoadTests();
-            OptimiseEval();
-        }
-
-        if (!strncmp(str, "psts", 4)) {
-            int piece, phase, rank, file;
-
-            for (piece = PAWN; piece <= KING; piece++) {
-                printf("\nPiece %d: Opening:\n", piece);
-                for (rank = 7; rank >= 0; rank--) {
-                    for (file = 0; file <= 7; file++) {
-                        printf("%3d, ", pstrank[piece][0][rank]+pstfile[piece][0][file]);
-                    }
-                    printf("\n");
-                }
-
-                printf("\nPiece %d: Endgame:\n", piece);
-                for (rank = 7; rank >= 0; rank--) {
-                    for (file = 0; file <= 7; file++) {
-                        printf("%3d, ", pstrank[piece][1][rank]+pstfile[piece][1][file]);
-                    }
-                    printf("\n");
-                }
-            }
-        }
-
-        if (!strncmp(str, "randeval", 8)) {
-            DumpRandomEval();
-            continue;
-        }
-
-        if (!strncmp(str, "zeroeval", 8)) {
-            DumpZeroEval();
-            continue;
         }
     }
 

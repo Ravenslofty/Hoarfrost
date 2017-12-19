@@ -128,9 +128,6 @@ extern uint64_t zobrist_ep[8];
 
 extern int starttime, timelimit, hardtimelimit;
 
-extern int pstrank[6][2][8];
-extern int pstfile[6][2][8];
-
 #define PRINT_MOVE(m) PrintMove(b, m)
 
 #define    hashfEXACT   0

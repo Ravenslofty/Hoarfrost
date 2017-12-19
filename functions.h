@@ -115,14 +115,6 @@ extern void ClearTT();
 extern int ReadTT(struct Board * b, struct Move * m, int depth, int alpha, int beta, int ply);
 extern void WriteTT(struct Board * b, int depth, int val, int hashf, struct Move m, int ply);
 
-// tune.cpp
-extern void LoadTests();
-extern void LoadEval();
-extern void OptimiseEval();
-
-extern void DumpZeroEval();
-extern void DumpRandomEval();
-
 // zobrist.cpp
 extern void InitZobrist();
 extern void CalculateHash(struct Board * b);
