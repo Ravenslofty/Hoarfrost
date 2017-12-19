@@ -150,7 +150,7 @@ int main()
         }
 
         if (!strncmp(str, "protover 2", 8)) {
-            printf("feature done=0 myname=\"Dorpsgek Corkscrew\" setboard=1 usermove=1 restart=1 done=1\n");
+            printf("feature done=0 myname=\"Hoarfrost\" setboard=1 usermove=1 restart=1 done=1\n");
             continue;
         }
 
@@ -247,7 +247,7 @@ int main()
             if (!found)
                 printf("Illegal move\n");
 
-			continue;
+            continue;
         }
 
         if (!strncmp(str, "time", 4)) {
