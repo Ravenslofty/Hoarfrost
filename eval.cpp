@@ -27,8 +27,8 @@
 #include "board.h"
 #include "functions.h"
 
-int piecevals[7][2] = { {105, 105}, {342, 342}, {347, 347}, {560, 560}, {1085, 1085}, {20000, 20000}, {0, 0} };
-int pst[6][2][64] = {
+const int piecevals[7][2] = { {105, 105}, {342, 342}, {347, 347}, {560, 560}, {1085, 1085}, {20000, 20000}, {0, 0} };
+const int pst[6][2][64] = {
     { // Pawns
         { // Middlegame
             0, 0, 0, 0, 0, 0, 0, 0,
@@ -163,7 +163,7 @@ int pst[6][2][64] = {
     }
 };
 
-void EvalMaterial(struct Board * b, int * midgame, int * endgame)
+void EvalMaterial(struct Board * b, int& midgame, int& endgame)
 {
     for (int pc = PAWN; pc <= QUEEN; pc++) {
         int wcnt = cnt(b->pieces[pc] & b->colors[WHITE]);
@@ -173,7 +173,7 @@ void EvalMaterial(struct Board * b, int * midgame, int * endgame)
     }
 }
 
-void EvalPST(struct Board * b, int * midgame, int * endgame)
+void EvalPST(struct Board * b, int& midgame, int& endgame)
 {
     uint64_t piecebb;
     int piece, sq;
@@ -184,8 +184,8 @@ void EvalPST(struct Board * b, int * midgame, int * endgame)
         while (piecebb) {
             sq = lsb(piecebb);
 
-            *midgame += pst[piece][0][sq];
-            *endgame += pst[piece][1][sq];
+            midgame += pst[piece][0][sq];
+            endgame += pst[piece][1][sq];
 
             piecebb &= piecebb - 1;
         }
@@ -195,8 +195,8 @@ void EvalPST(struct Board * b, int * midgame, int * endgame)
         while (piecebb) {
             sq = lsb(piecebb) ^ 56;
 
-            *midgame -= pst[piece][0][sq];
-            *endgame -= pst[piece][1][sq];
+            midgame -= pst[piece][0][sq];
+            endgame -= pst[piece][1][sq];
 
             piecebb &= piecebb - 1;
         }
@@ -212,11 +212,11 @@ int Eval(struct Board * b)
 
     // Material
     // TODO: incremental update.
-    EvalMaterial(b, &midgame, &endgame);
+    EvalMaterial(b, midgame, endgame);
 
     // PST
     // TODO: incremental update.
-    EvalPST(b, &midgame, &endgame);
+    EvalPST(b, midgame, endgame);
 
     // Tempo
     if (b->side == WHITE) {
@@ -236,9 +236,7 @@ int Eval(struct Board * b)
     phase -= cnt(b->pieces[ROOK]) << 1;
     phase -= cnt(b->pieces[QUEEN]) << 2;
 
-    phase = (phase * 256 + 12) / 24;
-
-    value = ((midgame * (256 - phase)) + (endgame * phase)) / 256;
+    value = ((midgame * phase) + (endgame * (24 - phase))) / 24;
 
     // Side to move
     if (b->side == BLACK)

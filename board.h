@@ -117,8 +117,8 @@ static const uint64_t Rank7Mask = 0x00FF000000000000ULL;
 static const uint64_t Rank8Mask = 0xFF00000000000000ULL;
 
 // From Adam Hair's PSTs.
-extern int piecevals[7][2];
-extern int pst[6][2][64];
+extern const int piecevals[7][2];
+extern const int pst[6][2][64];
 
 extern int nodes;
 extern int first, cuts;
