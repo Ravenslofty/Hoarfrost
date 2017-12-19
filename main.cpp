@@ -100,7 +100,8 @@ int main()
 
             timelimit -= 20; // safety buffer
 
-            hardtimelimit = min(3*timelimit, timeleft-20);
+            hardtimelimit = timelimit;
+            timelimit = hardtimelimit / 2;
 
             stopsearch = 0;
 
