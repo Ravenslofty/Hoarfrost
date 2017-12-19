@@ -163,44 +163,14 @@ int pst[6][2][64] = {
     }
 };
 
-int pstrank[6][2][8];
-int pstfile[6][2][8];
-
 void EvalMaterial(struct Board * b, int * midgame, int * endgame)
 {
-    int material = 0;
-
-    // Midgame
-    *midgame += cnt(b->pieces[PAWN] & b->colors[WHITE]) * piecevals[PAWN][0];
-    *midgame -= cnt(b->pieces[PAWN] & b->colors[BLACK]) * piecevals[PAWN][0];
-
-    *midgame += cnt(b->pieces[KNIGHT] & b->colors[WHITE]) * piecevals[KNIGHT][0];
-    *midgame -= cnt(b->pieces[KNIGHT] & b->colors[BLACK]) * piecevals[KNIGHT][0];
-
-    *midgame += cnt(b->pieces[BISHOP] & b->colors[WHITE]) * piecevals[BISHOP][0];
-    *midgame -= cnt(b->pieces[BISHOP] & b->colors[BLACK]) * piecevals[BISHOP][0];
-
-    *midgame += cnt(b->pieces[ROOK] & b->colors[WHITE]) * piecevals[ROOK][0];
-    *midgame -= cnt(b->pieces[ROOK] & b->colors[BLACK]) * piecevals[ROOK][0];
-
-    *midgame += cnt(b->pieces[QUEEN] & b->colors[WHITE]) * piecevals[QUEEN][0];
-    *midgame -= cnt(b->pieces[QUEEN] & b->colors[BLACK]) * piecevals[QUEEN][0];
-
-    // Endgame
-    *endgame += cnt(b->pieces[PAWN] & b->colors[WHITE]) * piecevals[PAWN][1];
-    *endgame -= cnt(b->pieces[PAWN] & b->colors[BLACK]) * piecevals[PAWN][1];
-
-    *endgame += cnt(b->pieces[KNIGHT] & b->colors[WHITE]) * piecevals[KNIGHT][1];
-    *endgame -= cnt(b->pieces[KNIGHT] & b->colors[BLACK]) * piecevals[KNIGHT][1];
-
-    *endgame += cnt(b->pieces[BISHOP] & b->colors[WHITE]) * piecevals[BISHOP][1];
-    *endgame -= cnt(b->pieces[BISHOP] & b->colors[BLACK]) * piecevals[BISHOP][1];
-
-    *endgame += cnt(b->pieces[ROOK] & b->colors[WHITE]) * piecevals[ROOK][1];
-    *endgame -= cnt(b->pieces[ROOK] & b->colors[BLACK]) * piecevals[ROOK][1];
-
-    *endgame += cnt(b->pieces[QUEEN] & b->colors[WHITE]) * piecevals[QUEEN][1];
-    *endgame -= cnt(b->pieces[QUEEN] & b->colors[BLACK]) * piecevals[QUEEN][1];
+    for (int pc = PAWN; pc <= QUEEN; pc++) {
+        int wcnt = cnt(b->pieces[pc] & b->colors[WHITE]);
+        int bcnt = cnt(b->pieces[pc] & b->colors[BLACK]);
+        midgame += (wcnt - bcnt) * piecevals[pc][0];
+        endgame += (wcnt - bcnt) * piecevals[pc][1];
+    }
 }
 
 void EvalPST(struct Board * b, int * midgame, int * endgame)
@@ -214,10 +184,8 @@ void EvalPST(struct Board * b, int * midgame, int * endgame)
         while (piecebb) {
             sq = lsb(piecebb);
 
-            *midgame += pstrank[piece][0][ROW(sq)];
-            *midgame += pstfile[piece][0][COL(sq)];
-            *endgame += pstrank[piece][1][ROW(sq)];
-            *endgame += pstfile[piece][1][COL(sq)];
+            *midgame += pst[piece][0][sq];
+            *endgame += pst[piece][1][sq];
 
             piecebb &= piecebb - 1;
         }
@@ -227,10 +195,8 @@ void EvalPST(struct Board * b, int * midgame, int * endgame)
         while (piecebb) {
             sq = lsb(piecebb) ^ 56;
 
-            *midgame -= pstrank[piece][0][ROW(sq)];
-            *midgame -= pstfile[piece][0][COL(sq)];
-            *endgame -= pstrank[piece][1][ROW(sq)];
-            *endgame -= pstfile[piece][1][COL(sq)];
+            *midgame -= pst[piece][0][sq];
+            *endgame -= pst[piece][1][sq];
 
             piecebb &= piecebb - 1;
         }

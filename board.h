@@ -25,6 +25,8 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include <array>
+
 #include <inttypes.h>
 #include <stdio.h>
 
@@ -60,6 +62,10 @@ struct Move {
     constexpr Move(char f, char d, char t, char p, char c, char i, short s):
         from(f), dest(d), type(t), prom(p), color(c), piece(i), score(s)
         {}
+    constexpr bool operator<(const Move& m)
+    {
+        return score > m.score;
+    }
 };
 
 struct Undo {
@@ -70,7 +76,7 @@ struct Undo {
 
 struct Sort {
     char state;
-    struct Move m[128];
+    std::array<Move, 128> m;
     int movecount;
     int i;
 };

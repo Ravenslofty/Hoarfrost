@@ -22,6 +22,9 @@
  * SOFTWARE.
  */
 
+#include <algorithm>
+#include <array>
+
 #include <stdlib.h>
 
 #include "board.h"
@@ -36,8 +39,8 @@ static inline int CompareMoves(const void * p1, const void * p2)
 
 void InitSort(struct Board * b, struct Sort * s, struct Move ttm)
 {
-    s->movecount = GenerateCaptures(b, s->m, 0);
-    s->movecount = GenerateQuiets(b, s->m, s->movecount);
+    s->movecount = GenerateCaptures(b, s->m.data(), 0);
+    s->movecount = GenerateQuiets(b, s->m.data(), s->movecount);
 
     if (ttm.from != ttm.dest) {
         for (s->i = 0; s->i < s->movecount; s->i++) {
@@ -50,16 +53,16 @@ void InitSort(struct Board * b, struct Sort * s, struct Move ttm)
         }
     }
 
-    qsort(s->m, s->movecount, sizeof(struct Move), CompareMoves);
+    std::stable_sort(s->m.begin(), s->m.begin() + s->movecount);
 
     s->i = 0;
 }
 
 void InitSortQuies(struct Board * b, struct Sort * s)
 {
-    s->movecount = GenerateCaptures(b, s->m, 0);
+    s->movecount = GenerateCaptures(b, s->m.data(), 0);
 
-    qsort(s->m, s->movecount, sizeof(struct Move), CompareMoves);
+    std::stable_sort(s->m.begin(), s->m.begin() + s->movecount);
 
     s->i = 0;
 }
@@ -106,9 +109,7 @@ int MoveValue(struct Board * b, struct Move m)
     else if (destbb & b->pieces[KING])
         cap = KING;
 
-    // The idea of sectioning the move sort scores comes from Rookie 2.
-    // Thank you, Marcel van Kervinck!
-    value += SEE(b, from, dest, cap, piece) << 6;
+    value += piecevals[cap][0] - piece;
 
     return value;
 }

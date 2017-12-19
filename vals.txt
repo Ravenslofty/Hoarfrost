@@ -1,4 +1,4 @@
-piece 0 105
+piece 0 0 -71
 pstrank 0 0 0 0
 pstfile 0 0 0 -4
 pstrank 0 0 1 0
@@ -15,6 +15,7 @@ pstrank 0 0 6 0
 pstfile 0 0 6 29
 pstrank 0 0 7 0
 pstfile 0 0 7 -5
+piece 0 1 1
 pstrank 0 1 0 0
 pstfile 0 1 0 30
 pstrank 0 1 1 0
@@ -31,7 +32,7 @@ pstrank 0 1 6 104
 pstfile 0 1 6 21
 pstrank 0 1 7 0
 pstfile 0 1 7 10
-piece 1 448
+piece 1 0 699
 pstrank 1 0 0 -15
 pstfile 1 0 0 -17
 pstrank 1 0 1 -10
@@ -48,6 +49,7 @@ pstrank 1 0 6 -4
 pstfile 1 0 6 -2
 pstrank 1 0 7 -5
 pstfile 1 0 7 -9
+piece 1 1 267
 pstrank 1 1 0 -30
 pstfile 1 1 0 -34
 pstrank 1 1 1 -23
@@ -64,7 +66,7 @@ pstrank 1 1 6 -15
 pstfile 1 1 6 -16
 pstrank 1 1 7 -42
 pstfile 1 1 7 -45
-piece 2 452
+piece 2 0 711
 pstrank 2 0 0 -4
 pstfile 2 0 0 -15
 pstrank 2 0 1 0
@@ -81,6 +83,7 @@ pstrank 2 0 6 14
 pstfile 2 0 6 7
 pstrank 2 0 7 0
 pstfile 2 0 7 -12
+piece 2 1 252
 pstrank 2 1 0 -14
 pstfile 2 1 0 -9
 pstrank 2 1 1 5
@@ -97,7 +100,7 @@ pstrank 2 1 6 0
 pstfile 2 1 6 0
 pstrank 2 1 7 -5
 pstfile 2 1 7 -7
-piece 3 711
+piece 3 0 -637
 pstrank 3 0 0 0
 pstfile 3 0 0 -4
 pstrank 3 0 1 -8
@@ -114,6 +117,7 @@ pstrank 3 0 6 74
 pstfile 3 0 6 -15
 pstrank 3 0 7 30
 pstfile 3 0 7 -6
+piece 3 1 415
 pstrank 3 1 0 0
 pstfile 3 1 0 -2
 pstrank 3 1 1 0
@@ -130,7 +134,7 @@ pstrank 3 1 6 -2
 pstfile 3 1 6 2
 pstrank 3 1 7 9
 pstfile 3 1 7 -8
-piece 4 1399
+piece 4 0 -298
 pstrank 4 0 0 0
 pstfile 4 0 0 -3
 pstrank 4 0 1 1
@@ -147,6 +151,7 @@ pstrank 4 0 6 4
 pstfile 4 0 6 0
 pstrank 4 0 7 0
 pstfile 4 0 7 4
+piece 4 1 1865
 pstrank 4 1 0 -27
 pstfile 4 1 0 -13
 pstrank 4 1 1 5
@@ -163,7 +168,7 @@ pstrank 4 1 6 0
 pstfile 4 1 6 24
 pstrank 4 1 7 0
 pstfile 4 1 7 17
-piece 5 20000
+piece 5 0 20000
 pstrank 5 0 0 28
 pstfile 5 0 0 -20
 pstrank 5 0 1 3
@@ -180,6 +185,7 @@ pstrank 5 0 6 11
 pstfile 5 0 6 12
 pstrank 5 0 7 44
 pstfile 5 0 7 10
+piece 5 1 20000
 pstrank 5 1 0 -34
 pstfile 5 1 0 -26
 pstrank 5 1 1 -7
