@@ -109,7 +109,7 @@ int SEE(struct Board * b, int from, int to, int cap, int att)
       occ     ^= fromSet; // reset bit in temporary occupancy (for x-Rays)
       if ( fromSet & mayXray )
          attadef |= GetXRays(b, occ, to);
-      fromSet  = GetLeastValuablePiece (b, attadef, (d + b->side) & 1, &att);
+      fromSet  = GetLeastValuablePiece (b, attadef, (d + b->flipped) & 1, &att);
    } while (fromSet && d < 32);
 
    while ((--d) > 0) {

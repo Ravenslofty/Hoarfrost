@@ -83,10 +83,6 @@ void CalculateHash(struct Board * b)
         }
     }
 
-    if (b->side == BLACK) {
-        hash ^= zobrist_side;
-    }
-
     hash ^= zobrist_castle[b->castle];
 
     if (b->ep != INVALID && b->ep <= 63) {

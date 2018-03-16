@@ -38,6 +38,21 @@ static int castle_mask[64] = {
      7, 15, 15, 15,  3, 15, 15, 11
 };
 
+void RotateBoard(struct Board * b)
+{
+    for (int pc = PAWN; pc <= KING; pc++) {
+        b->pieces[pc] = swap(b->pieces[pc]);
+    }
+
+    uint64_t white = b->colors[WHITE];
+    b->colors[WHITE] = swap(b->colors[BLACK]);
+    b->colors[BLACK] = swap(white);
+
+    b->flipped ^= 1;
+    b->ep ^= 56;
+    b->castle = ((b->castle << 2) & 0xC) | ((b->castle >> 2) & 0x3);
+}
+
 void MakeMove(struct Board * b, struct Undo * u, struct Move m)
 {
     uint64_t frombb, destbb, tmpbb;
@@ -64,11 +79,7 @@ void MakeMove(struct Board * b, struct Undo * u, struct Move m)
         break;
 
     case DOUBLE_PUSH:
-        if (b->side == WHITE) {
-            b->ep = dest - 8;
-        } else {
-            b->ep = dest + 8;
-        }
+        b->ep = dest - 8;
         break;
 
     case CAPTURE:
@@ -88,18 +99,14 @@ void MakeMove(struct Board * b, struct Undo * u, struct Move m)
             u->cap = KING;
 
         b->pieces[u->cap] ^= destbb;
-        b->colors[!b->side] ^= destbb;
+        b->colors[BLACK] ^= destbb;
         break;
 
     case ENPASSANT:
-        if (b->side == WHITE) {
-            epdest = dest - 8;
-        } else {
-            epdest = dest + 8;
-        }
+        epdest = dest - 8;
 
         b->pieces[PAWN] ^= 1ULL << epdest;
-        b->colors[!b->side] ^= 1ULL << epdest;
+        b->colors[BLACK] ^= 1ULL << epdest;
         break;
 
     case CASTLE:
@@ -113,7 +120,7 @@ void MakeMove(struct Board * b, struct Undo * u, struct Move m)
 
         // Move the rook.
         b->pieces[ROOK] ^= tmpbb;
-        b->colors[b->side] ^= tmpbb;
+        b->colors[WHITE] ^= tmpbb;
         break;
 
     case PROMOTION:
@@ -140,7 +147,7 @@ void MakeMove(struct Board * b, struct Undo * u, struct Move m)
 
         // Remove the piece.
         b->pieces[u->cap] ^= destbb;
-        b->colors[!b->side] ^= destbb;
+        b->colors[BLACK] ^= destbb;
 
         // Change the piece type.
         b->pieces[PAWN] ^= destbb;
@@ -150,9 +157,10 @@ void MakeMove(struct Board * b, struct Undo * u, struct Move m)
 
     // Move the piece.
     b->pieces[piece] ^= frombb | destbb;
-    b->colors[b->side] ^= frombb | destbb;
+    b->colors[WHITE] ^= frombb | destbb;
 
-    b->side ^= 1;
+    // Flip the board.
+    RotateBoard(b);
 }
 
 void UnmakeMove(struct Board * b, struct Undo * u, struct Move m)
@@ -170,7 +178,8 @@ void UnmakeMove(struct Board * b, struct Undo * u, struct Move m)
     frombb = 1ULL << from;
     destbb = 1ULL << dest;
 
-    b->side ^= 1;
+    // Flip the board.
+    RotateBoard(b);
 
     switch (type) {
     case QUIET:
@@ -182,20 +191,16 @@ void UnmakeMove(struct Board * b, struct Undo * u, struct Move m)
     case CAPTURE:
         // Add the captured piece.
         b->pieces[u->cap] ^= destbb;
-        b->colors[!b->side] ^= destbb;
+        b->colors[BLACK] ^= destbb;
         break;
 
     case ENPASSANT:
         // Get the piece location.
-        if (b->side == WHITE) {
-            epdest = dest - 8;
-        } else {
-            epdest = dest + 8;
-        }
+        epdest = dest - 8;
 
         // Add the captured piece.
         b->pieces[PAWN] ^= 1ULL << epdest;
-        b->colors[!b->side] ^= 1ULL << epdest;
+        b->colors[BLACK] ^= 1ULL << epdest;
         break;
 
     case CASTLE:
@@ -209,7 +214,7 @@ void UnmakeMove(struct Board * b, struct Undo * u, struct Move m)
 
         // Move the rook.
         b->pieces[ROOK] ^= tmpbb;
-        b->colors[b->side] ^= tmpbb;
+        b->colors[WHITE] ^= tmpbb;
         break;
 
     case PROMOTION:
@@ -221,7 +226,7 @@ void UnmakeMove(struct Board * b, struct Undo * u, struct Move m)
     case CAPTURE_PROMOTION:
         // Remove the piece.
         b->pieces[u->cap] ^= destbb;
-        b->colors[!b->side] ^= destbb;
+        b->colors[BLACK] ^= destbb;
 
         // Change the piece type.
         b->pieces[PAWN] ^= destbb;
@@ -235,5 +240,5 @@ void UnmakeMove(struct Board * b, struct Undo * u, struct Move m)
 
     // Move the piece.
     b->pieces[piece] ^= frombb | destbb;
-    b->colors[b->side] ^= frombb | destbb;
+    b->colors[WHITE] ^= frombb | destbb;
 }

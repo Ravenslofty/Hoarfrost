@@ -42,7 +42,7 @@ static inline int cnt(uint64_t b) {
     return __builtin_popcountll(b);
 }
 
-static inline int swap(uint64_t b) {
+static inline uint64_t swap(uint64_t b) {
     return __builtin_bswap64(b);
 }
 
@@ -66,12 +66,13 @@ extern int Eval(struct Board * b);
 
 // fen.cpp
 extern void ClearBoard(struct Board * b);
-extern void ParseFEN(struct Board * b, char * fen);
+extern void ParseFEN(struct Board * b, const char * fen);
 
 // main.cpp
 extern int ReadClock();
 
 // makemove.cpp
+extern void RotateBoard(struct Board * b);
 extern void MakeMove(struct Board * b, struct Undo * u, struct Move m);
 extern void UnmakeMove(struct Board * b, struct Undo * u, struct Move m);
 

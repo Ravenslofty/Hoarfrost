@@ -42,7 +42,7 @@ void ClearBoard(struct Board * b)
     b->colors[WHITE] = 0;
     b->colors[BLACK] = 0;
 
-    b->side = FORCE;
+    b->flipped = false;
 
     b->ep = INVALID;
 
@@ -54,7 +54,7 @@ void ClearBoard(struct Board * b)
 }
 
 // Convert a Forsyth-Edwards Notation position into our internal representation.
-void ParseFEN(struct Board * b, char * fen)
+void ParseFEN(struct Board * b, const char * fen)
 {
     // FEN is awkward to parse in my opinion. The format is readable for humans,
     // but it is unnatural for computers. Oh well.
@@ -70,6 +70,7 @@ void ParseFEN(struct Board * b, char * fen)
     int rank = 7, file = 0, square;
     int fenidx = 0;
     char c;
+    bool flip = false;
 
     ClearBoard(b);
 
@@ -160,7 +161,8 @@ void ParseFEN(struct Board * b, char * fen)
 
     // Now for the side to move indicator.
     // This will be either 'w' for White, or 'b' or Black. Simple enough.
-    b->side = (fen[fenidx] == 'b');
+    // This is used to mark whether the board should be rotated.
+    flip = (fen[fenidx] == 'b');
     fenidx++;
 
     // Another space seperator. Skip it too.
@@ -239,6 +241,9 @@ void ParseFEN(struct Board * b, char * fen)
     // least. So we just return.
 
     CalculateHash(b);
+
+    if (flip)
+        RotateBoard(b);
 
     return;
 }

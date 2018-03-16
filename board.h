@@ -33,7 +33,7 @@
 struct Board {
     uint64_t pieces[6];
     uint64_t colors[2];
-    unsigned char side;
+    bool flipped;
     unsigned char castle;
     unsigned char ep;
     unsigned char fifty;

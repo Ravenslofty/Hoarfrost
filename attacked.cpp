@@ -51,10 +51,10 @@ bool IsAttacked(struct Board * b, int side, int square)
 
 bool IsIllegal(struct Board * b)
 {
-    return IsAttacked(b, b->side, lsb(b->pieces[KING] & b->colors[!b->side]));
+    return IsAttacked(b, WHITE, lsb(b->pieces[KING] & b->colors[BLACK]));
 }
 
 bool IsInCheck(struct Board * b)
 {
-    return IsAttacked(b, !b->side, lsb(b->pieces[KING] & b->colors[b->side]));
+    return IsAttacked(b, BLACK, lsb(b->pieces[KING] & b->colors[WHITE]));
 }

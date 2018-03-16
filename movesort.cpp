@@ -88,11 +88,7 @@ int MoveValue(struct Board * b, struct Move m)
     uint64_t destbb = 1ULL << dest;
 
     // PST difference as base move score.
-    if (b->side == WHITE) {
-        value = pst[piece][0][dest] - pst[piece][0][from];
-    } else {
-        value = pst[piece][0][dest^56] - pst[piece][0][from^56];
-    }
+    value = pst[piece][0][dest] - pst[piece][0][from];
 
     // SEE for winning captures and losing quiets.
     cap = NO_PIECE;

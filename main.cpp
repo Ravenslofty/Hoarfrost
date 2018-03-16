@@ -69,7 +69,8 @@ int main()
     struct Move m[128];
     char str[400];
     int i, n;
-    int side = FORCE;
+    int side = BLACK;
+    bool force;
     int timeleft = 300000, movestogo = 0, inc = 8000;
 
     ParseFEN(&b, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -80,7 +81,7 @@ int main()
 
     while (1) {
 
-        if (b.side == side) {
+        if (!force && side == WHITE) {
             struct PV pv;
             int finish, depth;
             int qscore, score;
@@ -90,8 +91,6 @@ int main()
             finish = 0;
 
             starttime = ReadClock();
-
-            qscore = Quies(&b, -10000, +10000);
 
             if (!movestogo)
                 timelimit = (timeleft / GAMELENGTH) + inc;
@@ -139,6 +138,7 @@ int main()
             }
 
             MakeMove(&b, &u, pv.moves[0]);
+            side = BLACK;
 
             if (movestogo)
                 movestogo--;
@@ -149,22 +149,24 @@ int main()
         }
 
         if (!strncmp(str, "protover 2", 8)) {
-            printf("feature done=0 myname=\"Hoarfrost\" setboard=1 usermove=1 restart=1 done=1\n");
+            printf("feature done=0 myname=\"Hoarfrost\" setboard=1 usermove=1 done=1\n");
             continue;
         }
 
         if (!strncmp(str, "go", 2)) {
-            side = b.side;
+            side = WHITE;
+            force = false;
             continue;
         }
 
         if (!strncmp(str, "force", 5)) {
-            side = FORCE;
+            force = true;
             continue;
         }
 
         if (!strncmp(str, "setboard", 8)) {
             ParseFEN(&b, str+9);
+            side = BLACK;
             continue;
         }
 
@@ -176,6 +178,8 @@ int main()
 
         if (!strncmp(str, "new", 3)) {
             ParseFEN(&b, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+            side = WHITE;
+            force = true;
             continue;
         }
 
@@ -235,6 +239,7 @@ int main()
                 if ((m.from&63) == tmp.from && (m.dest&63) == tmp.dest) {
                     MakeMove(&b, &u, m);
                     found = 1;
+                    side = WHITE;
 
                     if (movestogo)
                         movestogo--;
@@ -281,7 +286,6 @@ int main()
             printf("colors[WHITE]:  %016llX\n", b.colors[WHITE]);
             printf("colors[BLACK]:  %016llX\n", b.colors[BLACK]);
             printf("\n");
-            printf("side to move:   %d\n", b.side);
             printf("en passant sq:  %d\n", b.ep);
             printf("castle rights:  %d\n", b.castle);
             continue;

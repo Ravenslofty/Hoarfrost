@@ -167,9 +167,8 @@ void EvalMaterial(struct Board * b, int * midgame, int * endgame)
 {
     for (int pc = PAWN; pc <= QUEEN; pc++) {
         int wcnt = cnt(b->pieces[pc] & b->colors[WHITE]);
-        int bcnt = cnt(b->pieces[pc] & b->colors[BLACK]);
-        midgame += (wcnt - bcnt) * piecevals[pc][0];
-        endgame += (wcnt - bcnt) * piecevals[pc][1];
+        midgame += wcnt * piecevals[pc][0];
+        endgame += wcnt * piecevals[pc][1];
     }
 }
 
@@ -189,17 +188,6 @@ void EvalPST(struct Board * b, int * midgame, int * endgame)
 
             piecebb &= piecebb - 1;
         }
-
-        piecebb = b->pieces[piece] & b->colors[BLACK];
-
-        while (piecebb) {
-            sq = lsb(piecebb) ^ 56;
-
-            *midgame -= pst[piece][0][sq];
-            *endgame -= pst[piece][1][sq];
-
-            piecebb &= piecebb - 1;
-        }
     }
 }
 
@@ -207,24 +195,23 @@ int Eval(struct Board * b)
 {
     int midgame, endgame, phase, value;
 
-    midgame = 0;
-    endgame = 0;
-
-    // Material
-    // TODO: incremental update.
-    EvalMaterial(b, &midgame, &endgame);
-
-    // PST
-    // TODO: incremental update.
-    EvalPST(b, &midgame, &endgame);
-
     // Tempo
-    if (b->side == WHITE) {
-        midgame += 10;
-        endgame += 10;
-    } else {
-        midgame -= 10;
-        endgame -= 10;
+    midgame = 10;
+    endgame = 10;
+
+    for (int side = WHITE; side <= BLACK; side++) {
+        // Material
+        // TODO: incremental update.
+        EvalMaterial(b, &midgame, &endgame);
+
+        // PST
+        // TODO: incremental update.
+        EvalPST(b, &midgame, &endgame);
+    
+        midgame = -midgame;
+        endgame = -endgame;
+   
+        RotateBoard(b);
     }
 
     // Phase
@@ -236,13 +223,7 @@ int Eval(struct Board * b)
     phase -= cnt(b->pieces[ROOK]) << 1;
     phase -= cnt(b->pieces[QUEEN]) << 2;
 
-    phase = (phase * 256 + 12) / 24;
-
-    value = ((midgame * (256 - phase)) + (endgame * phase)) / 256;
-
-    // Side to move
-    if (b->side == BLACK)
-        value = -value;
+    value = ((midgame * (24 - phase)) + (endgame * phase)) / 24;
 
     return value;
 }
