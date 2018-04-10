@@ -48,10 +48,11 @@ int Quies(struct Board * b, int alpha, int beta)
 
     InitSortQuies(b, &s);
 
-    while (NextMove(&s, &m)) {
+    while (NextMove(b, &s, &m)) {
 
-        if ((m.score >> 6) < 0)
-            break;
+        if (s.m[s.i].score < 20000) {
+            continue;
+        }
 
         MakeMove(b, &u, m);
 
@@ -112,12 +113,12 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
     // Hash probe
     CalculateHash(b);
 
-    /*if ((val = ReadTT(b, &m, depth, alpha, beta, ply)) != 11000) {
+    if ((val = ReadTT(b, &m, depth, alpha, beta, ply)) != 11000) {
         if (!pvnode) {
             pv->count = 0;
             return val;
         }
-    }*/
+    }
 
     if (depth >= 2 && !incheck && eval >= beta && !pvnode && cnt(b->colors[WHITE] & ~b->pawns()) > 3) {
 
@@ -139,7 +140,7 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
 
     InitSort(b, &s, m);
 
-    while (NextMove(&s, &m)) {
+    while (NextMove(b, &s, &m)) {
 
         MakeMove(b, &u, m);
 
@@ -170,7 +171,7 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
                 first++;
             cuts++;
 
-            //WriteTT(b, depth, val, hashfBETA, m, ply);
+            WriteTT(b, depth, val, hashfBETA, m, ply);
 
             return beta;
         }
@@ -195,7 +196,7 @@ int Search(struct Board * b, int depth, int alpha, int beta, int ply, struct PV 
         }
     }
 
-    //WriteTT(b, depth, alpha, flag, bestmove, ply);
+    WriteTT(b, depth, alpha, flag, bestmove, ply);
 
     return alpha;
 }

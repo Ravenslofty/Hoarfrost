@@ -37,7 +37,7 @@ struct TTE {
     uint8_t depth;
 };
 
-std::vector< TTE > tt;
+std::vector<TTE> tt;
 
 void ResizeTT(int megabytes)
 {

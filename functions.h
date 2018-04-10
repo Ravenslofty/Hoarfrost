@@ -56,6 +56,17 @@ static inline int min(int a, int b)
     return (a < b) ? a : b;
 }
 
+static inline int piece(struct Board * b, int sq)
+{
+    for (int pc = PAWN; pc < KING; pc++) {
+        if (b->pieces[pc] & (1ull << sq)) {
+            return pc;
+        }
+    }
+
+    __builtin_unreachable();
+}
+
 // attacked.cpp
 extern bool IsAttacked(struct Board * b, int side, int square);
 extern bool IsIllegal(struct Board * b);
@@ -92,7 +103,7 @@ extern int GenerateCaptures(struct Board * b, struct Move * m, int movecount);
 // movesort.cpp
 extern void InitSort(struct Board * b, struct Sort * s, struct Move ttm);
 extern void InitSortQuies(struct Board * b, struct Sort * s);
-extern int NextMove(struct Sort * s, struct Move * m);
+extern int NextMove(struct Board * b, struct Sort * s, struct Move * m);
 extern int MoveValue(struct Board * b, struct Move m);
 
 extern void ClearHistory();

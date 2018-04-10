@@ -113,10 +113,15 @@ int main()
 
                 printf("%d %d %d %d ", depth, score, (finish-starttime)/10, nodes);
 
+                bool f = b.flipped;
+
                 for (i = 0; i < pv.count; i++) {
                     PrintMove(&b, pv.moves[i]);
                     printf(" ");
+                    b.flipped = !b.flipped;
                 }
+
+                b.flipped = f;
 
                 printf("\n");
 
@@ -230,7 +235,7 @@ int main()
 
             InitSort(&b, &s, tmp);
 
-            while (NextMove(&s, &m)) {
+            while (NextMove(&b, &s, &m)) {
 
                 printf("# ");
                 PrintMove(&b, m);
